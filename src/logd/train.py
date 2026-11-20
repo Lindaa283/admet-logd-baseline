@@ -3,8 +3,15 @@
 Protocol, enforced by the code rather than promised in prose:
 
 * Hyperparameter search runs `GridSearchCV` over the training set only. The
-  validation set is not visible to the search, and the test set is not loaded
-  by this module at all -- grep it: there is no reference to `split.test`.
+  validation set is not visible to the search.
+
+* What this module does with the test partition, stated precisely because an
+  earlier version of this docstring overclaimed: it READS the test rows and
+  writes them to `partition_test.csv`, to freeze which molecules are held
+  out. It never featurises them, never passes them to `fit`, and never
+  computes a metric on them. So test labels do reach this process's memory
+  and the disk; they do not reach any model or any selection decision.
+  The honest guarantee is "not used", not "not loaded".
 * The validation set is scored once per model, after refitting on train. It is
   used to choose *which model family* to put forward, and for nothing else.
 * Fitted models are frozen to `artifacts/<split>/<model>.joblib`. The test
