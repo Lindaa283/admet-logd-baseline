@@ -1,21 +1,51 @@
-# Regenerable from `python -m logd.data --build` (digests recorded in results/)
-data/
+# --- raw third-party data -----------------------------------------------
+# Not committed. The dataset is redistributed under CC BY-SA 3.0 (see
+# DATA_SOURCES.md); rather than vendor someone else's data into this repo,
+# `src/admet/download.py` fetches it and pins the exact bytes by SHA-256.
+# Run `python -m admet.download` (or the pipeline) to recreate this folder.
+data/raw/*
+!data/raw/.gitkeep
 
-# Fitted models; large, and rebuilt by `python -m logd.train`
-artifacts/
+# Derived results ARE committed: results/tables/*.csv, results/figures/*.png
+# and results/run_metadata.json are the evidence for the numbers in README.md.
 
-# results/ IS committed on purpose: measured metrics, provenance and the
-# test-access audit log are the point of this repository.
-
-.venv/
-venv/
+# Python
 __pycache__/
 *.py[cod]
-.pytest_cache/
-.ipynb_checkpoints/
+.venv/
+venv/
 *.egg-info/
 build/
 dist/
+.pytest_cache/
+.ipynb_checkpoints/
 
+# Editors / OS
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
+
+# Nothing personal belongs in this repo: no CVs, transcripts, application
+# drafts, or private notes. These patterns are a second line of defence.
+*.pdf
+*.docx
+*.doc
+my_*.yaml
+personal/
+
+# --- src/logd pipeline outputs ------------------------------------------
+# Re-added after this file was rewritten by the parallel src/admet session,
+# which dropped these two rules. Nothing above was removed.
+#
+# Without them `git add -A` would commit an 81 MB fitted random forest.
+# Both directories are fully regenerable:
+#   python -m logd.data   --build          -> data/processed/
+#   python -m logd.train  --split scaffold -> artifacts/<split>/
+# and the raw dataset's sha256 is pinned in src/logd/config.py, so the
+# inputs are reproducible without vendoring them.
+data/processed/
+artifacts/
+
+# results/ stays committed on purpose: measured metrics, provenance and the
+# test-access audit log are the evidence for every number claimed.
