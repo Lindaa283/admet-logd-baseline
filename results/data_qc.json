@@ -1,0 +1,24 @@
+{
+  "dataset": "MoleculeNet Lipophilicity (AstraZeneca / ChEMBL3301363)",
+  "url": "https://deepchemdata.s3-us-west-1.amazonaws.com/datasets/Lipophilicity.csv",
+  "raw_sha256": "aed41590cb30609d51d8e08ad3ff06495a76e80e211358801f596b10da69bacd",
+  "curated_sha256": "349071a1edc40f3fd9d7977026f75783037a551fcf32ef2c1a3fea06eb13b515",
+  "target": "logD7.4: base-10 logarithm of the octanol/water distribution coefficient measured at pH 7.4. Higher means more lipophilic. Experimental, single assay family, single endpoint.",
+  "units": "log10 ratio (dimensionless)",
+  "duplicate_label_tolerance": 0.5,
+  "curation": {
+    "raw_rows": 4200,
+    "unparseable_smiles": 0,
+    "multi_fragment_stripped": 1,
+    "missing_label": 0,
+    "duplicate_structures": 0,
+    "duplicates_merged": 0,
+    "duplicates_dropped_conflicting": 0,
+    "final_rows": 4200,
+    "label_min": -1.5,
+    "label_max": 4.5,
+    "label_mean": 2.1863357142857143,
+    "label_std": 1.203003713387104,
+    "dropped_examples": []
+  }
+}

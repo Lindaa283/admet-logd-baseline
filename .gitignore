@@ -1,0 +1,21 @@
+# Regenerable from `python -m logd.data --build` (digests recorded in results/)
+data/
+
+# Fitted models; large, and rebuilt by `python -m logd.train`
+artifacts/
+
+# results/ IS committed on purpose: measured metrics, provenance and the
+# test-access audit log are the point of this repository.
+
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+
+.DS_Store
+Thumbs.db
