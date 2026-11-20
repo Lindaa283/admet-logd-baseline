@@ -36,10 +36,13 @@ LIPOPHILICITY = {
     # Measured on download 2026-11-20 (282,606 bytes); see
     # data/raw/provenance.json for the record written at fetch time.
     "expected_sha256": "aed41590cb30609d51d8e08ad3ff06495a76e80e211358801f596b10da69bacd",
-    "licence": "CC BY-SA 3.0 (ChEMBL); redistributed via MoleculeNet/DeepChem",
+    "licence": "CC BY-SA 3.0 Unported (ChEMBL); redistributed via MoleculeNet/DeepChem",
     "attribution": (
-        "Experimental logD7.4, AstraZeneca, deposited in ChEMBL "
-        "(doc CHEMBL3301363); distributed as MoleculeNet 'Lipophilicity'."
+        "Experimental logD7.4 curated from ChEMBL (AstraZeneca deposited data "
+        "set), distributed as the MoleculeNet 'Lipophilicity' benchmark. "
+        "ChEMBL data is released under CC BY-SA 3.0 Unported "
+        "(https://www.ebi.ac.uk/chembl/). See DATA_SOURCES.md for the exact "
+        "licence wording and for which identifiers were verified."
     ),
 }
 

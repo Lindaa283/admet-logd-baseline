@@ -85,11 +85,25 @@ def test_deterministic_split_is_reproducible_without_a_seed():
         assert np.array_equal(a, b)
 
 
-def test_seeded_splits_are_reproducible_and_seed_dependent():
+def test_seeded_splits_are_reproducible():
     assert np.array_equal(scaffold_split(LUMPY, seed=3)[2],
                           scaffold_split(LUMPY, seed=3)[2])
-    assert not np.array_equal(scaffold_split(LUMPY, seed=3)[2],
-                              scaffold_split(LUMPY, seed=4)[2])
+
+
+def test_seeded_splits_depend_on_the_seed():
+    """Different seeds must be able to produce different partitions.
+
+    Checked on a population of many equal-sized groups.  With only a handful
+    of very unequal groups (as in LUMPY) the greedy fill is so constrained
+    that two seeds can legitimately land on the same partition, so that would
+    not be a fair test of seed sensitivity.
+    """
+    many_groups = [f"core_{index // 5}" for index in range(200)]  # 40 groups of 5
+    test_sets = {
+        tuple(scaffold_split(many_groups, seed=seed)[2].tolist())
+        for seed in range(6)
+    }
+    assert len(test_sets) > 1
 
 
 def test_deterministic_split_puts_the_biggest_series_in_train():

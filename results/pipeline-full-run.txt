@@ -1,0 +1,12 @@
+﻿python.exe : C:\Users\wangx\projects\admet-logd-baseline\src\admet\metrics.py:57: ConstantInputWarning: An input array 
+is constant; the correlation coefficient is not defined.
+At line:1 char:362
++ ... gx\projects\admet-logd-baseline"; & ".\.venv\Scripts\python.exe" -c "
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (C:\Users\wangx\...is not defined.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  spearman = float(stats.spearmanr(y_true, y_pred).statistic)
+C:\Users\wangx\projects\admet-logd-baseline\src\admet\metrics.py:58: ConstantInputWarning: An input array is constant; 
+the correlation coefficient is not defined.
+  pearson = float(stats.pearsonr(y_true, y_pred).statistic)

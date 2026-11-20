@@ -1,0 +1,67 @@
+{
+  "best_model_headline": "morgan_desc_hgb",
+  "bootstrap_resamples": 50,
+  "chosen_hyperparameters": {
+    "clogp_calibrated": {},
+    "constant": {},
+    "descriptor_ridge": {
+      "alpha": 100.0
+    },
+    "morgan_desc_hgb": {
+      "learning_rate": 0.06,
+      "max_iter": 600,
+      "max_leaf_nodes": 31
+    },
+    "morgan_rf": {
+      "max_features": 0.1,
+      "min_samples_leaf": 1
+    },
+    "morgan_ridge": {
+      "alpha": 100.0
+    }
+  },
+  "data_provenance": {
+    "attribution": "Experimental logD7.4, AstraZeneca, deposited in ChEMBL (doc CHEMBL3301363); distributed as MoleculeNet 'Lipophilicity'.",
+    "downloaded_utc": "2026-11-20T13:20:11+00:00",
+    "filename": "Lipophilicity.csv",
+    "licence": "CC BY-SA 3.0 (ChEMBL); redistributed via MoleculeNet/DeepChem",
+    "n_bytes": 282606,
+    "name": "lipophilicity_az_logd74",
+    "sha256": "aed41590cb30609d51d8e08ad3ff06495a76e80e211358801f596b10da69bacd",
+    "sha256_matches_expected": true,
+    "url": "https://deepchemdata.s3.us-west-1.amazonaws.com/datasets/Lipophilicity.csv"
+  },
+  "figures": [
+    "results\\figures\\01_data_overview.png",
+    "results\\figures\\02_duplicate_spread.png",
+    "results\\figures\\03_model_comparison.png",
+    "results\\figures\\04_observed_vs_predicted.png",
+    "results\\figures\\05_residuals.png",
+    "results\\figures\\06_applicability_domain.png",
+    "results\\figures\\07_descriptor_coefficients.png"
+  ],
+  "finished_utc": "2026-11-20T13:32:30Z",
+  "fractions": [
+    0.7,
+    0.1,
+    0.2
+  ],
+  "label": "logD7.4",
+  "morgan": {
+    "bits": 2048,
+    "radius": 2
+  },
+  "n_seeds": 1,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.13.14",
+  "random_state": 20261120,
+  "versions": {
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.5",
+    "pandas": "3.1.1",
+    "rdkit": "2026.09.2",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1"
+  },
+  "wall_seconds": 739.2
+}

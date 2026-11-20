@@ -115,9 +115,25 @@ def test_unit_check_rejects_a_column_in_the_wrong_scale(tmp_path):
     assert report.unit_check.startswith("SUSPECT")
 
 
-def test_unit_check_accepts_a_log_scale_column(csv_path):
+def test_unit_check_flags_the_planted_implausible_value(csv_path):
+    """The fixture contains one label of 99.0, so the check must complain."""
     _, report = load_and_qc(csv_path, source_sha256="deadbeef")
+    assert report.unit_check.startswith("SUSPECT")
+
+
+def test_unit_check_accepts_a_clean_log_scale_column(tmp_path):
+    frame = pd.DataFrame(
+        {
+            "CMPD_CHEMBLID": [f"c{i}" for i in range(6)],
+            "smiles": ["CCO", "c1ccccc1", "CCCCCCCC", "CCCO", "CCCCO", "CCCCCO"],
+            "exp": [1.0, 2.1, 4.5, 0.3, 0.9, 1.4],
+        }
+    )
+    path = tmp_path / "clean_units.csv"
+    frame.to_csv(path, index=False)
+    _, report = load_and_qc(path, source_sha256="x")
     assert report.unit_check.startswith("consistent")
+    assert report.n_label_out_of_range == 0
 
 
 def test_one_row_per_compound_in_the_clean_table(csv_path):
