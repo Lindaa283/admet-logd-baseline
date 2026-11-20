@@ -34,11 +34,15 @@ the failed ones), [`results/version_comparison.md`](results/version_comparison.m
 | Training, random split (contrast) | ✅ all 8 models |
 | Structure-only leakage audit | ✅ both splits |
 | Model selection frozen | ✅ [`results/freeze_manifest.json`](results/freeze_manifest.json) |
-| **Formal test-set evaluation** | ⏳ **not yet run** — see §7 |
+| **Formal test-set evaluation** | ✅ **run once**, 2026-11-20 — see §7 |
 
-Every number below §7 is a **validation-set** number. None of them is a
-test-set number. The distinction is kept in the file names too:
-`results/validation_*.json` exists; `results/test_*.json` does not.
+Sections 5 and 6 report **validation-set** numbers. The test-set numbers appear
+in §7 and nowhere else. The distinction is kept in the file names too:
+`results/validation_*.json` drove model selection,
+[`results/test_scaffold.json`](results/test_scaffold.json) holds the single
+final evaluation, and
+[`results/test_access_log.jsonl`](results/test_access_log.jsonl) has **exactly
+one entry**.
 
 ### A scoping warning about this repository
 
@@ -310,9 +314,74 @@ that the de-duplication does what it claims.
 
 ---
 
-## 7. The test set has not been scored yet
+## 7. Test-set result (scored once, on 2026-11-20)
 
-Deliberate, and the current state is frozen rather than merely promised:
+The held-out scaffold-split test partition (**n = 420**) was scored **exactly
+once**, against models frozen before the evaluation ran. The audit record is
+[`results/test_access_log.jsonl`](results/test_access_log.jsonl):
+`run_index: 1`, `2026-11-20T18:56:26Z`, git commit `d97df34`, bound to the
+curated-data sha256. There is one entry and one reported result set.
+
+| model | RMSE (95% CI) | MAE | R² | Spearman ρ | Kendall τ |
+|---|---|---|---|---|---|
+| `mean_baseline` | 1.240 [1.161, 1.325] | 1.032 | −0.006 | — | — |
+| `clogp_identity` | 1.599 [1.480, 1.718] | 1.226 | −0.673 | 0.467 | 0.326 |
+| `clogp_linear` *(best baseline)* | 1.099 [1.030, 1.167] | 0.919 | 0.209 | 0.467 | 0.326 |
+| `ridge_ecfp4` | 0.972 [0.904, 1.039] | 0.766 | 0.382 | 0.602 | 0.429 |
+| **`svr_desc` — pre-registered headline** | **0.809 [0.738, 0.881]** | **0.609** | **0.572** | **0.736** | **0.553** |
+| `rf_desc` | 0.859 [0.792, 0.923] | 0.673 | 0.517 | 0.707 | 0.523 |
+| `hgb_desc` | 0.839 [0.767, 0.913] | 0.645 | 0.539 | 0.722 | 0.536 |
+| `hgb_desc_ecfp4` | 0.796 [0.727, 0.867] | 0.612 | 0.586 | 0.743 | 0.561 |
+
+**The claim.** `svr_desc` (RBF SVR on 2D descriptors) improves RMSE by
+**0.290 log units** over the strongest baseline, `clogp_linear`, and the
+bootstrap intervals do not overlap ([0.738, 0.881] vs [1.030, 1.167]). That is
+the result: a descriptor model beats a calibrated, zero-training-data cLogP
+estimate on unseen chemotypes, by an amount larger than the uncertainty.
+
+**What is not the claim.** `hgb_desc_ecfp4` has the lowest test RMSE (0.796),
+0.013 log units below the headline, with intervals that almost completely
+overlap. It is reported as `post_hoc_best_on_test` and is **not** this
+project's result: it was identified after the test labels were seen, so its
+interval understates its true uncertainty. The honest reading is that the two
+models are indistinguishable, not that boosting won.
+
+**Two baselines worth reading carefully.** Raw `clogp_identity` scores
+R² = **−0.673**, i.e. worse than predicting the mean — because Crippen cLogP
+estimates log*P*, not log*D* at pH 7.4, so it is systematically mis-calibrated
+for this endpoint. Yet its τ = 0.326 equals the calibrated version's: the
+*ranking* is fine and only the offset is broken. Reporting R² alone would have
+hidden that; reporting τ alone would have hidden the calibration failure.
+
+**Applicability domain — the advantage is real but local.** Test-to-train
+nearest-neighbour ECFP4 Tanimoto: median 0.457, mean 0.497, range 0.216–0.949;
+16.9% are close analogues (> 0.7) and 14.8% are novel chemotypes (< 0.3).
+Error tracks that distance for the learned model and *not* for the baseline:
+
+| nearest-train Tanimoto | n | `svr_desc` MAE | `clogp_linear` MAE |
+|---|---|---|---|
+| [0.0, 0.3) novel | 62 | 0.781 | 0.917 |
+| [0.3, 0.5) | 167 | 0.681 | 0.909 |
+| [0.5, 0.7) | 120 | 0.520 | 0.978 |
+| [0.7, 1.0) analogue | 71 | 0.442 | 0.849 |
+
+`svr_desc` degrades monotonically as compounds get further from the training
+set (0.442 → 0.781 MAE), while `clogp_linear` stays flat — as it must, having
+learned nothing from the training set. So the model's edge comes from
+similarity to training chemistry and decays with novelty. On the most novel
+sixth of the test set it is still better than the baseline, but by much less.
+
+**Only the scaffold split was scored.** The random split stays
+validation-only: it is a contrast, its leakage is already measured and known to
+be non-zero, and scoring it would spend a second test evaluation to confirm
+what §6 already shows.
+
+Artifacts: [`results/test_scaffold.json`](results/test_scaffold.json),
+[`results/test_table_scaffold.md`](results/test_table_scaffold.md),
+`results/test_predictions_scaffold.csv`,
+`results/figures/test_scaffold_svr_desc.png`.
+
+### The state that was frozen before the evaluation ran
 
 * [`results/freeze_manifest.json`](results/freeze_manifest.json) pins the git
   commit, every `config.py` constant, the raw and curated data hashes, the
@@ -321,23 +390,19 @@ Deliberate, and the current state is frozen rather than merely promised:
   list and the bootstrap settings. Anything that could change a reported test
   number also changes a hash in that file.
 * The pre-registered headline model is `svr_desc` for the scaffold split.
-* `results/test_access_log.jsonl` does not exist, because the evaluation has
-  not run. **On its own that proves nothing** — an absent log is also what
-  deleting a log looks like. What makes the claim checkable is that
-  `evaluate.py` is the only module that reads `partition_test.csv` for scoring,
-  that it contains no `fit` call, and that the frozen estimator hashes in the
-  manifest can be recomputed against the artifacts.
+* `results/test_access_log.jsonl` now holds exactly one entry. **A one-entry
+  log does not by itself prove the set was read once** — a log can be
+  truncated. What makes the claim checkable is that `evaluate.py` is the only
+  module that reads `partition_test.csv` for scoring, that it contains no `fit`
+  call, and that the frozen estimator hashes in the manifest can be recomputed
+  against the artifacts on disk.
 
-**Why it has not run yet:** Windows Smart App Control (Enforced,
-`VerifiedAndReputablePolicyState = 1`) is intermittently blocking RDKit's
-unsigned native extension, so featurising the test molecules currently fails on
-this machine — see §9. The models are trained and frozen; the evaluation is a
-single command away.
-
-**Only the scaffold split will be scored.** The random split stays
-validation-only: it is a contrast, its leakage is already measured and known to
-be non-zero, and scoring it would spend a second test evaluation to confirm
-something the audit in §6 already shows.
+The evaluation had been blocked for several hours by Windows Smart App Control
+(Enforced, `VerifiedAndReputablePolicyState = 1`) intermittently refusing
+RDKit's unsigned native extension (§9). It was finally run behind a pre-flight
+check that confirmed RDKit could load and featurise a molecule, specifically so
+that a mid-run block could not leave an access-log entry with no result beside
+it. It completed in a single pass.
 
 ---
 
@@ -347,9 +412,13 @@ something the audit in §6 already shows.
    another property, and nothing here says anything about biological activity.
 2. **4200 molecules is small**, and only 4102 of them are distinguishable in
    this feature space (§3).
-3. **No test-set result yet** (§7). Until it exists, the best honest summary of
-   this project is "a correctly specified validation experiment", not "a
-   measured generalisation result".
+3. **One test evaluation means one number, not a distribution.** The test
+   result (§7) comes from a single scaffold partition of 420 compounds. The
+   bootstrap intervals quantify sampling noise *within* that partition; they do
+   not capture how much the answer would move on a different scaffold
+   partition. The validation-split comparison in §5 suggests that movement is
+   comparable to the intervals themselves, so differences of less than about
+   0.05 log units between models should not be read as real.
 4. **14.8% of the scaffold test set is a novel chemotype** (Tanimoto < 0.3 to
    anything in training). Whatever the test RMSE turns out to be, it is an
    average over a set that is mostly interpolation; `evaluate.py` reports error
@@ -416,9 +485,12 @@ Three factual questions to answer when those materials arrive:
 
 **And one measured fact that is already relevant:** a **zero-parameter** Crippen
 clogP calculator — no training, no fitting, shipped free inside RDKit — reaches
-**τ = 0.317** on this endpoint's validation set. So a target of "τ ≥ 0.3" is
-not by itself an achievement. Before treating such a threshold as meaningful,
-measure what the free baseline scores on *their* data.
+**τ = 0.317** on this endpoint's validation set and **τ = 0.326** on the
+held-out test set (§7), *while scoring R² = −0.673 there*. So a target of
+"τ ≥ 0.3" is not by itself an achievement, and a rank metric can look
+respectable on a model whose absolute predictions are worse than the mean.
+Before treating such a threshold as meaningful, measure what the free baseline
+scores on *their* data, and ask which metric the ranking is being read from.
 
 What transfers from this project is the **methodology**, not the weights:
 scaffold splitting, leakage assertions, zero-parameter baselines, bootstrap

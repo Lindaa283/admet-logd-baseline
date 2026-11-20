@@ -1,0 +1,401 @@
+{
+  "split": "scaffold",
+  "test_n": 420,
+  "test_access_run_index": 1,
+  "models_missing_artifacts": [],
+  "results": {
+    "mean_baseline": {
+      "block": "clogp",
+      "note": "predicts the training-set mean; zero chemistry",
+      "is_baseline": true,
+      "predict_seconds": 0.0,
+      "metrics": {
+        "rmse": 1.24,
+        "mae": 1.0321,
+        "r2": -0.0062,
+        "spearman": NaN,
+        "kendall": NaN
+      },
+      "ci95": {
+        "rmse": [
+          1.1606,
+          1.3253
+        ],
+        "mae": [
+          0.9695,
+          1.1034
+        ],
+        "r2": [
+          -0.0314,
+          -0.0
+        ],
+        "spearman": [
+          NaN,
+          NaN
+        ],
+        "kendall": [
+          NaN,
+          NaN
+        ]
+      }
+    },
+    "clogp_identity": {
+      "block": "clogp",
+      "note": "RDKit Crippen clogP used as-is; zero fitted parameters",
+      "is_baseline": true,
+      "predict_seconds": 0.0,
+      "metrics": {
+        "rmse": 1.5991,
+        "mae": 1.2257,
+        "r2": -0.6734,
+        "spearman": 0.4674,
+        "kendall": 0.3255
+      },
+      "ci95": {
+        "rmse": [
+          1.4797,
+          1.7179
+        ],
+        "mae": [
+          1.1273,
+          1.3252
+        ],
+        "r2": [
+          -0.9882,
+          -0.4221
+        ],
+        "spearman": [
+          0.384,
+          0.5444
+        ],
+        "kendall": [
+          0.2658,
+          0.3813
+        ]
+      }
+    },
+    "clogp_linear": {
+      "block": "clogp",
+      "note": "Crippen clogP rescaled by a 2-parameter fit on train",
+      "is_baseline": true,
+      "predict_seconds": 0.013,
+      "metrics": {
+        "rmse": 1.0991,
+        "mae": 0.9195,
+        "r2": 0.2095,
+        "spearman": 0.4674,
+        "kendall": 0.3255
+      },
+      "ci95": {
+        "rmse": [
+          1.0302,
+          1.1669
+        ],
+        "mae": [
+          0.8602,
+          0.9757
+        ],
+        "r2": [
+          0.1312,
+          0.2738
+        ],
+        "spearman": [
+          0.384,
+          0.5444
+        ],
+        "kendall": [
+          0.2658,
+          0.3813
+        ]
+      }
+    },
+    "ridge_ecfp4": {
+      "block": "ecfp4",
+      "note": "linear model on 2048-bit ECFP4",
+      "is_baseline": false,
+      "predict_seconds": 0.008,
+      "metrics": {
+        "rmse": 0.9719,
+        "mae": 0.7659,
+        "r2": 0.3818,
+        "spearman": 0.6015,
+        "kendall": 0.4291
+      },
+      "ci95": {
+        "rmse": [
+          0.9041,
+          1.039
+        ],
+        "mae": [
+          0.7087,
+          0.8229
+        ],
+        "r2": [
+          0.2832,
+          0.4624
+        ],
+        "spearman": [
+          0.5276,
+          0.6651
+        ],
+        "kendall": [
+          0.3715,
+          0.4811
+        ]
+      }
+    },
+    "svr_desc": {
+      "block": "desc",
+      "note": "RBF SVR on standardised RDKit 2D descriptors",
+      "is_baseline": false,
+      "predict_seconds": 0.085,
+      "metrics": {
+        "rmse": 0.8089,
+        "mae": 0.6093,
+        "r2": 0.5718,
+        "spearman": 0.7363,
+        "kendall": 0.5534
+      },
+      "ci95": {
+        "rmse": [
+          0.7377,
+          0.8808
+        ],
+        "mae": [
+          0.562,
+          0.66
+        ],
+        "r2": [
+          0.491,
+          0.6447
+        ],
+        "spearman": [
+          0.6812,
+          0.7869
+        ],
+        "kendall": [
+          0.5053,
+          0.6012
+        ]
+      }
+    },
+    "rf_desc": {
+      "block": "desc",
+      "note": "500-tree random forest on RDKit 2D descriptors",
+      "is_baseline": false,
+      "predict_seconds": 0.047,
+      "metrics": {
+        "rmse": 0.859,
+        "mae": 0.6733,
+        "r2": 0.5172,
+        "spearman": 0.7066,
+        "kendall": 0.5233
+      },
+      "ci95": {
+        "rmse": [
+          0.792,
+          0.923
+        ],
+        "mae": [
+          0.6214,
+          0.7261
+        ],
+        "r2": [
+          0.4456,
+          0.5783
+        ],
+        "spearman": [
+          0.6479,
+          0.7607
+        ],
+        "kendall": [
+          0.4761,
+          0.5719
+        ]
+      }
+    },
+    "hgb_desc": {
+      "block": "desc",
+      "note": "histogram gradient boosting; handles NaN descriptors natively",
+      "is_baseline": false,
+      "predict_seconds": 0.006,
+      "metrics": {
+        "rmse": 0.839,
+        "mae": 0.6448,
+        "r2": 0.5393,
+        "spearman": 0.7224,
+        "kendall": 0.5356
+      },
+      "ci95": {
+        "rmse": [
+          0.7668,
+          0.9131
+        ],
+        "mae": [
+          0.5966,
+          0.6973
+        ],
+        "r2": [
+          0.4496,
+          0.6101
+        ],
+        "spearman": [
+          0.6593,
+          0.7715
+        ],
+        "kendall": [
+          0.4864,
+          0.5799
+        ]
+      }
+    },
+    "hgb_desc_ecfp4": {
+      "block": "desc_ecfp4",
+      "note": "boosting on descriptors concatenated with ECFP4",
+      "is_baseline": false,
+      "predict_seconds": 0.01,
+      "metrics": {
+        "rmse": 0.7956,
+        "mae": 0.6119,
+        "r2": 0.5858,
+        "spearman": 0.7434,
+        "kendall": 0.5609
+      },
+      "ci95": {
+        "rmse": [
+          0.7266,
+          0.8671
+        ],
+        "mae": [
+          0.5643,
+          0.6613
+        ],
+        "r2": [
+          0.5098,
+          0.6499
+        ],
+        "spearman": [
+          0.6831,
+          0.7928
+        ],
+        "kendall": [
+          0.5114,
+          0.6072
+        ]
+      }
+    }
+  },
+  "verdict": {
+    "headline_model": "svr_desc",
+    "headline_chosen_how": "frozen before this evaluation by train.py, on validation RMSE alone; read back from results/validation_scaffold.json",
+    "best_baseline": "clogp_linear",
+    "rmse_improvement_over_best_baseline": 0.2902,
+    "headline_beats_all_baselines": true,
+    "post_hoc_best_on_test": "hgb_desc_ecfp4",
+    "post_hoc_note": "post_hoc_best_on_test is the lowest test RMSE in the table. It is reported for completeness and is NOT this project's result: it was chosen after seeing the test labels, so its bootstrap interval understates its true uncertainty. If it differs from headline_model, the honest reading is that the two are within noise of each other on validation, not that the better test score was earned.",
+    "interpretation": "A learned model is only worth shipping if this improvement is larger than the bootstrap intervals above."
+  },
+  "similarity_audit": {
+    "description": "ECFP4 Tanimoto from each test molecule to its nearest training molecule. A scaffold split guarantees distinct frameworks, not distant molecules, so the distance is measured rather than assumed.",
+    "nearest_train_tanimoto": {
+      "n": 420,
+      "mean": 0.497,
+      "median": 0.4568,
+      "min": 0.2162,
+      "max": 0.9492,
+      "quantiles": {
+        "0.05": 0.2581,
+        "0.25": 0.3363,
+        "0.5": 0.4568,
+        "0.75": 0.6631,
+        "0.95": 0.7917
+      },
+      "fraction_above_0.7_close_analogue": 0.169,
+      "fraction_below_0.3_novel_chemotype": 0.1476
+    },
+    "error_by_similarity_band": {
+      "svr_desc": [
+        {
+          "band": "[0.0, 0.3)",
+          "n": 62,
+          "rmse": 0.981,
+          "mae": 0.7812,
+          "kendall": 0.4841
+        },
+        {
+          "band": "[0.3, 0.5)",
+          "n": 167,
+          "rmse": 0.9039,
+          "mae": 0.6806,
+          "kendall": 0.541
+        },
+        {
+          "band": "[0.5, 0.7)",
+          "n": 120,
+          "rmse": 0.6634,
+          "mae": 0.52,
+          "kendall": 0.6013
+        },
+        {
+          "band": "[0.7, 1.0)",
+          "n": 71,
+          "rmse": 0.6039,
+          "mae": 0.4421,
+          "kendall": 0.5353
+        }
+      ],
+      "clogp_linear": [
+        {
+          "band": "[0.0, 0.3)",
+          "n": 62,
+          "rmse": 1.1351,
+          "mae": 0.9172,
+          "kendall": 0.3265
+        },
+        {
+          "band": "[0.3, 0.5)",
+          "n": 167,
+          "rmse": 1.0851,
+          "mae": 0.9085,
+          "kendall": 0.4305
+        },
+        {
+          "band": "[0.5, 0.7)",
+          "n": 120,
+          "rmse": 1.159,
+          "mae": 0.9779,
+          "kendall": 0.2162
+        },
+        {
+          "band": "[0.7, 1.0)",
+          "n": 71,
+          "rmse": 0.9904,
+          "mae": 0.8487,
+          "kendall": 0.2039
+        }
+      ]
+    }
+  },
+  "provenance": {
+    "timestamp_utc": "2026-11-20T18:56:36+00:00",
+    "python": "3.13.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 24,
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "pandas": "3.1.1",
+      "scikit-learn": "1.9.1",
+      "rdkit": "2026.9.2",
+      "joblib": "1.6.0",
+      "matplotlib": "3.11.2"
+    },
+    "gpu_detected": "NVIDIA GeForce RTX 5060 Laptop GPU, 8151 MiB, 591.91",
+    "gpu_used_for_training": false,
+    "git_commit": "d97df34cca708ee0ab0a53dbe2b7a83f3631331d",
+    "git_working_tree_dirty": true,
+    "monetary_cost_usd": 0.0,
+    "cost_note": "All computation local on the author's laptop. No cloud compute, no paid API, no licensed software. Public dataset downloaded once."
+  }
+}

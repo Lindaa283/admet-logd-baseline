@@ -1,0 +1,1 @@
+{"run_index": 1, "timestamp_utc": "2026-11-20T18:56:26+00:00", "split": "scaffold", "models": ["mean_baseline", "clogp_identity", "clogp_linear", "ridge_ecfp4", "svr_desc", "rf_desc", "hgb_desc", "hgb_desc_ecfp4"], "git_commit": "d97df34cca708ee0ab0a53dbe2b7a83f3631331d", "curated_sha256": "349071a1edc40f3fd9d7977026f75783037a551fcf32ef2c1a3fea06eb13b515"}
