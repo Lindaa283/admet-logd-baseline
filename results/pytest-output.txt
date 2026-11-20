@@ -1,12 +1,22 @@
-﻿============================= test session starts =============================
+﻿# SUPERSEDED / ARCHIVED LOG -- the 3 collection errors below are understood and fixed.
+#
+# An early repo-wide `pytest` invocation on 2026-11-20 13:29. The errors are a
+# package-name collision, not test failures: tests/logd/__init__.py declares a
+# package literally named `logd`, which shadows the src/logd package that those
+# tests import, so `from logd import metrics` resolves to the test directory.
+# Both suites pass when that shadowing is bypassed:
+#   results/tables/pytest_logd_2026-11-20.txt          49 passed  (src/logd)
+#   results/tables/pytest_admet_2026-11-20_final.txt   93 passed  (src/admet)
+# Host paths were redacted before publication.
+============================= test session starts =============================
 platform win32 -- Python 3.13.14, pytest-9.2.0, pluggy-1.7.0
-rootdir: C:\Users\wangx\projects\admet-logd-baseline
+rootdir: <repo>
 configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 collected 103 items / 3 errors
 
 =================================== ERRORS ====================================
 ________________ ERROR collecting tests/logd/test_featurize.py ________________
-ImportError while importing test module 'C:\Users\wangx\projects\admet-logd-baseline\tests\logd\test_featurize.py'.
+ImportError while importing test module '<repo>\tests\logd\test_featurize.py'.
 Hint: make sure your test modules/packages have valid Python names.
 Traceback:
 ..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
@@ -14,7 +24,7 @@ Traceback:
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 E   ModuleNotFoundError: No module named 'logd.test_featurize'
 _______________ ERROR collecting tests/logd/test_similarity.py ________________
-ImportError while importing test module 'C:\Users\wangx\projects\admet-logd-baseline\tests\logd\test_similarity.py'.
+ImportError while importing test module '<repo>\tests\logd\test_similarity.py'.
 Hint: make sure your test modules/packages have valid Python names.
 Traceback:
 ..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
@@ -22,7 +32,7 @@ Traceback:
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 E   ModuleNotFoundError: No module named 'logd.test_similarity'
 _________________ ERROR collecting tests/logd/test_splits.py __________________
-ImportError while importing test module 'C:\Users\wangx\projects\admet-logd-baseline\tests\logd\test_splits.py'.
+ImportError while importing test module '<repo>\tests\logd\test_splits.py'.
 Hint: make sure your test modules/packages have valid Python names.
 Traceback:
 ..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module

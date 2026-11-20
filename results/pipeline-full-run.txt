@@ -1,12 +1,22 @@
-﻿python.exe : C:\Users\wangx\projects\admet-logd-baseline\src\admet\metrics.py:57: ConstantInputWarning: An input array 
+﻿# SUPERSEDED / ARCHIVED LOG -- this is not a result.
+#
+# stderr of an src/admet full pipeline run (n_seeds=3) that was deliberately
+# stopped part-way on 2026-11-20 13:41 and never completed. It holds only SciPy
+# ConstantInputWarning noise -- the constant-predictor baseline has no defined
+# correlation -- and no metrics at all. Kept because section 7 of
+# docs/ADMET_SESSION_HANDOFF.md refers to this aborted run when explaining why
+# a few result files on disk came from different batches.
+# The completed src/admet outputs are in results/tables/ and
+# results/run_metadata.json. Host paths were redacted before publication.
+python.exe : <repo>\src\admet\metrics.py:57: ConstantInputWarning: An input array 
 is constant; the correlation coefficient is not defined.
 At line:1 char:362
 + ... gx\projects\admet-logd-baseline"; & ".\.venv\Scripts\python.exe" -c "
 +                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (C:\Users\wangx\...is not defined.:String) [], RemoteException
+    + CategoryInfo          : NotSpecified: (<home>\...is not defined.:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
   spearman = float(stats.spearmanr(y_true, y_pred).statistic)
-C:\Users\wangx\projects\admet-logd-baseline\src\admet\metrics.py:58: ConstantInputWarning: An input array is constant; 
+<repo>\src\admet\metrics.py:58: ConstantInputWarning: An input array is constant; 
 the correlation coefficient is not defined.
   pearson = float(stats.pearsonr(y_true, y_pred).statistic)

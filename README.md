@@ -44,6 +44,15 @@ final evaluation, and
 [`results/test_access_log.jsonl`](results/test_access_log.jsonl) has **exactly
 one entry**.
 
+### The result, in one line
+
+On 420 scaffold-disjoint held-out compounds, an SVR on 2D descriptors reaches
+**RMSE 0.809** (95% CI 0.738–0.881) against **1.099** (1.030–1.167) for a
+calibrated Crippen cLogP baseline — **0.290 log units better, intervals not
+overlapping**. The model was frozen on validation before the test set was
+read. Full table, the post-hoc caveat and the applicability-domain analysis are
+in [§7](#7-test-set-result-scored-once-on-2026-11-20).
+
 ### A scoping warning about this repository
 
 This repository contains **two independent implementations**:
@@ -398,6 +407,12 @@ Artifacts: [`results/test_scaffold.json`](results/test_scaffold.json),
   module that reads `partition_test.csv` for scoring, that it contains no `fit`
   call, and that the frozen estimator hashes in the manifest can be recomputed
   against the artifacts on disk.
+* The provenance block in `results/test_scaffold.json` records
+  `git_working_tree_dirty: true`. That is expected rather than a warning sign:
+  the evaluation writes its own output files, so by the time the snapshot is
+  taken at the end of the run, the tree contains them. The *code* state is
+  pinned by `git_commit: d97df34`, which was committed and clean when the run
+  started.
 
 The evaluation had been blocked for several hours by Windows Smart App Control
 (Enforced, `VerifiedAndReputablePolicyState = 1`) intermittently refusing
