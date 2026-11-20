@@ -27,10 +27,17 @@ N_CV_FOLDS = 5
 # ---------------------------------------------------------------------------
 # MoleculeNet "Lipophilicity": experimental octanol/water distribution
 # coefficient at pH 7.4 (logD7.4) for 4200 compounds, curated by AstraZeneca
-# and deposited in ChEMBL (ChEMBL3301363).
+# and deposited in ChEMBL.
 #   Wu et al., "MoleculeNet: A Benchmark for Molecular Machine Learning",
 #   Chem. Sci. 2018, 9, 513-530.
-DATASET_NAME = "MoleculeNet Lipophilicity (AstraZeneca / ChEMBL3301363)"
+#
+# The exact ChEMBL deposition identifier is deliberately NOT asserted here.
+# An earlier version of this file claimed "CHEMBL3301363" without verifying
+# it; independent research turned up DOI 10.6019/chembl3301361 instead, and
+# neither could be confirmed against a primary source. The dataset is
+# identified by its sha256 below, which is checkable; a provenance string
+# that cannot be checked is worse than no string at all.
+DATASET_NAME = "MoleculeNet Lipophilicity (logD7.4, AstraZeneca deposition in ChEMBL)"
 DATASET_URL = (
     "https://deepchemdata.s3-us-west-1.amazonaws.com/datasets/Lipophilicity.csv"
 )

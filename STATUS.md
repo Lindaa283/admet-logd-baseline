@@ -17,8 +17,9 @@
 | 项目 | 定义 |
 |---|---|
 | 预测终点 | **logD<sub>7.4</sub>** — 辛醇/水分配系数（pH 7.4），实验值 |
-| 数据 | MoleculeNet *Lipophilicity*（ChEMBL3301363，AstraZeneca 存入），公开 |
-| 实际入库 | **4200 化合物**，0 个无法解析，0 个重复结构，logD ∈ [−1.5, 4.5]，sd 1.203 |
+| 数据 | MoleculeNet *Lipophilicity*（AstraZeneca logD7.4，经 ChEMBL 分发），公开。**存放编号刻意不断言**，见 `LICENSE` 与比较报告 L4 |
+| 实际入库 | **4200 化合物**，0 个无法解析，0 个 canonical SMILES 重复，logD ∈ [−1.5, 4.5]，sd 1.203 |
+| ⚠ 重复的真实情况 | "0 个重复结构"**只在 SMILES 粒度成立**。按 InChI 连接层（忽略立体与质子化）则有 **82 组 / 180 行**重复。由于 Morgan 指纹未启用手性、描述符全为 2D，这 82 组在**特征空间里逐位相同**，有效唯一特征向量 ≤ 4118。骨架划分下无害（对映体共享 Murcko 骨架，必然同分区），**随机划分下是真实泄漏**。见比较报告 L5 |
 | 划分 | Bemis–Murcko 骨架划分 3360 / 420 / 420（确定性，无 RNG）+ 随机划分对照 |
 | 调参 | 仅在 train 上做 5 折 CV；模型族选择看 valid；**test 只碰一次** |
 | 指标 | RMSE、MAE、R²、Spearman ρ、Kendall τ，全部带 95% bootstrap 区间 |
@@ -71,7 +72,8 @@ src/logd/
   train.py        CV 在 train、选择看 valid、模型冻结落盘
   evaluate.py     测试集只读一次，且写审计日志
   provenance.py   环境 / git / GPU / 成本快照
-tests/            49 个测试（40 已通过；similarity 的 9 个待随下次回归跑）
+  audit.py        只读结构的泄漏审计（不读标签、不加载模型、不消耗测试集额度）
+tests/logd_suite/ **49 个测试全部通过**（1.49s，原生 venv，未用 Docker）
 Dockerfile, requirements.txt, run.ps1, pytest.ini, LICENSE
 ```
 
@@ -91,7 +93,9 @@ Dockerfile, requirements.txt, run.ps1, pytest.ini, LICENSE
 1. `hgb_desc`、`hgb_desc_ecfp4` 未训练（Run 1 在此崩溃，Run 2 被主动停止）。
 2. 随机划分（random split）整组未训练。
 3. `results/validation_*.json` 未生成（train.py 在全部模型跑完后才写）。
-4. nearest-neighbour 相似性审计**代码已就绪但未运行**。
+4. ~~nearest-neighbour 相似性审计未运行~~ **已完成**，见 `results/leakage_audit_logd.json`
+   与比较报告第 9 节。结论：骨架划分 test 最近邻中位数 0.457、ECFP4 相同孪生 **0 例**；
+   随机划分 0.694、**14 例**。主划分干净，随机划分确有泄漏（故仅作对照）。
 5. 测试集评估**未运行**，这是刻意的。
 6. `README.md` 未写——**必须等有完整实测结果之后再写**，禁止先写数字再跑。
 7. git 已 `init`（main 分支），但**尚未提交**。

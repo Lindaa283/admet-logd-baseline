@@ -1,0 +1,142 @@
+{
+  "what_this_is": "Structure-only leakage audit. No labels read, no models loaded, no predictions made. Does not count as a test-set evaluation.",
+  "n_curated": 4200,
+  "splits": {
+    "scaffold": {
+      "sizes": {
+        "train": 3360,
+        "valid": 420,
+        "test": 420
+      },
+      "valid": {
+        "nearest_train_tanimoto": {
+          "n": 420,
+          "mean": 0.4802,
+          "median": 0.4375,
+          "min": 0.1892,
+          "max": 0.9841,
+          "quantiles": {
+            "0.05": 0.25,
+            "0.25": 0.3173,
+            "0.5": 0.4375,
+            "0.75": 0.6433,
+            "0.95": 0.8089
+          },
+          "fraction_above_0.7_close_analogue": 0.181,
+          "fraction_below_0.3_novel_chemotype": 0.1929
+        },
+        "identical_feature_twins": {
+          "n_with_identical_ecfp4_in_train": 0,
+          "examples": []
+        }
+      },
+      "test": {
+        "nearest_train_tanimoto": {
+          "n": 420,
+          "mean": 0.497,
+          "median": 0.4568,
+          "min": 0.2162,
+          "max": 0.9492,
+          "quantiles": {
+            "0.05": 0.2581,
+            "0.25": 0.3363,
+            "0.5": 0.4568,
+            "0.75": 0.6631,
+            "0.95": 0.7917
+          },
+          "fraction_above_0.7_close_analogue": 0.169,
+          "fraction_below_0.3_novel_chemotype": 0.1476
+        },
+        "identical_feature_twins": {
+          "n_with_identical_ecfp4_in_train": 0,
+          "examples": []
+        }
+      }
+    },
+    "random": {
+      "sizes": {
+        "train": 3360,
+        "valid": 420,
+        "test": 420
+      },
+      "valid": {
+        "nearest_train_tanimoto": {
+          "n": 420,
+          "mean": 0.6425,
+          "median": 0.6765,
+          "min": 0.1475,
+          "max": 1.0,
+          "quantiles": {
+            "0.05": 0.2856,
+            "0.25": 0.5066,
+            "0.5": 0.6765,
+            "0.75": 0.7918,
+            "0.95": 0.925
+          },
+          "fraction_above_0.7_close_analogue": 0.4548,
+          "fraction_below_0.3_novel_chemotype": 0.0619
+        },
+        "identical_feature_twins": {
+          "n_with_identical_ecfp4_in_train": 11,
+          "examples": [
+            "CC(C(=O)O)c1cccc(C(=O)c2ccccc2)c1",
+            "CCCSc1c(C(=O)NC2CCCCC2)cnn1[C@H]1CC[C@@H](C(=O)O)CC1",
+            "CCC[C@@H](c1ccc(C(=O)O)c(Oc2cccc(Cl)c2)c1)N1CCC[C@H](n2cc(C)c(=O)[nH]c2=O)C1",
+            "CCN(C(=O)Cc1ccc(S(C)(=O)=O)cc1)C1CCN(CC[C@@H](c2ccccc2)c2ccc(S(C)(=O)=O)cc2)CC1",
+            "CC[C@H](CO)Nc1nc(SCc2ccccc2)nc2nc(N)sc12"
+          ]
+        }
+      },
+      "test": {
+        "nearest_train_tanimoto": {
+          "n": 420,
+          "mean": 0.6426,
+          "median": 0.6936,
+          "min": 0.2162,
+          "max": 1.0,
+          "quantiles": {
+            "0.05": 0.3059,
+            "0.25": 0.475,
+            "0.5": 0.6936,
+            "0.75": 0.7942,
+            "0.95": 0.9146
+          },
+          "fraction_above_0.7_close_analogue": 0.4905,
+          "fraction_below_0.3_novel_chemotype": 0.0476
+        },
+        "identical_feature_twins": {
+          "n_with_identical_ecfp4_in_train": 14,
+          "examples": [
+            "CC(C)Cc1ccc([C@@H](C)C(=O)NS(C)(=O)=O)cc1",
+            "CC(NC(=O)C1(N)CCN(c2ncnc3[nH]ccc23)CC1)c1ccc(Cl)cc1",
+            "CCCSc1ncccc1C(=O)N(C)[C@@H]1[C@@H]2CC3C[C@H]1C[C@@](O)(C3)C2",
+            "COCCC(=O)N[C@@H](C)c1ccc(Nc2ncc3cc(-c4ccncc4)ccc3n2)cc1",
+            "CO[C@@H]1CN(Cc2ccc(C(F)(F)F)cc2)CC[C@@H]1N(C)C(=O)Cc1ccc(-n2cnnn2)cc1"
+          ]
+        }
+      }
+    }
+  },
+  "provenance": {
+    "timestamp_utc": "2026-11-20T13:52:11+00:00",
+    "python": "3.13.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 24,
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "pandas": "3.1.1",
+      "scikit-learn": "1.9.1",
+      "rdkit": "2026.9.2",
+      "joblib": "1.6.0",
+      "matplotlib": "3.11.2"
+    },
+    "gpu_detected": "NVIDIA GeForce RTX 5060 Laptop GPU, 8151 MiB, 591.91",
+    "gpu_used_for_training": false,
+    "git_commit": "8e3c0572ec7566ff9c5ec91774727831e6f842d2",
+    "git_working_tree_dirty": true,
+    "monetary_cost_usd": 0.0,
+    "cost_note": "All computation local on the author's laptop. No cloud compute, no paid API, no licensed software. Public dataset downloaded once."
+  }
+}
