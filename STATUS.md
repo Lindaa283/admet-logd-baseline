@@ -1,15 +1,22 @@
 # STATUS — 交接记录 / handoff
 
-**最后更新:** 2026-11-20 16:40
+**最后更新:** 2026-11-20 19:0x（测试集评估完成后补记）
 **状态:** 代码完整、49 项测试通过、数据已策管、**骨架与随机两套划分的 8 个模型
 全部训练完成**、泄漏审计完成、模型选择已冻结（`results/freeze_manifest.json`）、
-`README.md` 已撰写。
+`README.md` 已撰写、**最终测试集评估已完成**、申请用简介已撰写
+（`docs/PROJECT_BRIEF.md`）。**项目已可交付。**
 
-**`src/logd` 的测试集至今未被评分**——不是因为忘了，而是 Smart App Control
-正间歇性拦截 RDKit 的原生扩展，测试分子无法特征化。评估只差一条命令。
-⚠ 本仓库**整体**并非"测试集从未被访问":并行的 `src/admet` 已有测试集结果
-（`results/tables/`、`docs/ADMET_SESSION_HANDOFF.md`）。两套实现协议不同，
-不可混为一谈。
+**`src/logd` 的测试集已评分，恰好一次**（2026-11-20 18:56 UTC，
+`results/test_access_log.jsonl` 的 `run_index: 1`，绑定 commit `d97df34`）。
+此前拦着没跑的 Smart App Control 问题，是通过先做 RDKit 预检、确认可特征化后
+再运行来规避的——这样中途被拦不会留下"有日志条目但没有结果"的记录。
+结果见 README §7 与 `results/test_scaffold.json`：
+预先登记的 `svr_desc` 测试 RMSE **0.809 [0.738, 0.881]**，
+最强基线 `clogp_linear` 为 1.099 [1.030, 1.167]，差 0.290 log 单位且区间不重叠。
+
+⚠ 本仓库**整体**仍然不是"测试集只被访问过一次"：并行的 `src/admet` 有它自己的
+测试集结果（`results/tables/`、`docs/ADMET_SESSION_HANDOFF.md`）。两套实现的
+策管与划分不同，是两批不同的化合物，**不可混为一谈，也不可把分数并列比较**。
 
 实测数字一律见 [`results/experiment_log.md`](results/experiment_log.md)，
 不在本文件重复，以免两处不一致。
@@ -113,9 +120,10 @@ Dockerfile, requirements.txt, run.ps1, pytest.ini, LICENSE
 4. ~~nearest-neighbour 相似性审计未运行~~ **已完成**，见 `results/leakage_audit_logd.json`
    与比较报告第 9 节。结论：骨架划分 test 最近邻中位数 0.457、ECFP4 相同孪生 **0 例**；
    随机划分 0.694、**14 例**。主划分干净，随机划分确有泄漏（故仅作对照）。
-5. 测试集评估**未运行**，这是刻意的。
-6. ~~`README.md` 未写~~ **已写**。所有数字都来自已完成的运行；
-   测试集一节明确写着"尚未评分"，没有预填任何测试数字。
+5. ~~测试集评估**未运行**~~ **已运行，恰好一次**（见本文件开头与 README §7）。
+   随机划分按设计**不做**测试集评估，仍然只有验证集数字。
+6. ~~`README.md` 未写~~ **已写**，并在评估后更新：§7 从"尚未评分"改写为实际结果，
+   §1 状态表、§8 的局限（单一划分只给一个数字）与 §10 的 Kendall τ 说明一并更正。
 7. ~~git 尚未提交~~ 已有多次提交，main 分支。
 8. **唯一剩下的一步：** `python -m logd.evaluate --split scaffold
    --confirm-final-evaluation`。等 SAC 放行 RDKit 即可执行。

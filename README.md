@@ -48,16 +48,18 @@ one entry**.
 
 This repository contains **two independent implementations**:
 
-* **`src/logd/`** — this project, described by this README. Its test split has
-  never been scored.
+* **`src/logd/`** — this project, described by this README. Its test split was
+  scored **once**, on 2026-11-20 (§7).
 * **`src/admet/`** — a parallel implementation built concurrently by a
-  different agent session, preserved untouched. **It has already produced
-  test-set results**, which live in `results/tables/` and
+  different agent session, preserved untouched. It produced **its own,
+  separate** test-set results, which live in `results/tables/` and
   `docs/ADMET_SESSION_HANDOFF.md`.
 
-So it is **false** to say "the test set in this repository has never been
-touched". The correct, narrower statement is: *the test partition of the
-`src/logd` implementation has never been scored*. The two implementations
+So "the test set in this repository was read once" is also **false**: it was
+read once per implementation, by two pipelines that curate and split
+differently. The correct statement is: *the `src/logd` test partition was
+scored exactly once, and the `src/admet` test partition is a different set of
+compounds scored by different code.* The two implementations
 curate, split and evaluate differently, and
 [`results/version_comparison.md`](results/version_comparison.md) establishes
 which of their numbers are comparable at all (short answer: the scores are not
