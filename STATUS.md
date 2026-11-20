@@ -1,8 +1,15 @@
 # STATUS — 交接记录 / handoff
 
-**最后更新:** 2026-11-20 13:25
-**状态:** 代码完整、测试通过、数据已策管、**骨架划分训练部分完成并已中断**。
-测试集至今未被读取。README 尚未撰写（因为还缺完整结果）。
+**最后更新:** 2026-11-20 16:40
+**状态:** 代码完整、49 项测试通过、数据已策管、**骨架与随机两套划分的 8 个模型
+全部训练完成**、泄漏审计完成、模型选择已冻结（`results/freeze_manifest.json`）、
+`README.md` 已撰写。
+
+**`src/logd` 的测试集至今未被评分**——不是因为忘了，而是 Smart App Control
+正间歇性拦截 RDKit 的原生扩展，测试分子无法特征化。评估只差一条命令。
+⚠ 本仓库**整体**并非"测试集从未被访问":并行的 `src/admet` 已有测试集结果
+（`results/tables/`、`docs/ADMET_SESSION_HANDOFF.md`）。两套实现协议不同，
+不可混为一谈。
 
 实测数字一律见 [`results/experiment_log.md`](results/experiment_log.md)，
 不在本文件重复，以免两处不一致。
@@ -19,7 +26,7 @@
 | 预测终点 | **logD<sub>7.4</sub>** — 辛醇/水分配系数（pH 7.4），实验值 |
 | 数据 | MoleculeNet *Lipophilicity*（AstraZeneca logD7.4，经 ChEMBL 分发），公开。**存放编号刻意不断言**，见 `LICENSE` 与比较报告 L4 |
 | 实际入库 | **4200 化合物**，0 个无法解析，0 个 canonical SMILES 重复，logD ∈ [−1.5, 4.5]，sd 1.203 |
-| ⚠ 重复的真实情况 | "0 个重复结构"**只在 SMILES 粒度成立**。按 InChI 连接层（忽略立体与质子化）则有 **82 组 / 180 行**重复。由于 Morgan 指纹未启用手性、描述符全为 2D，这 82 组在**特征空间里逐位相同**，有效唯一特征向量 ≤ 4118。骨架划分下无害（对映体共享 Murcko 骨架，必然同分区），**随机划分下是真实泄漏**。见比较报告 L5 |
+| ⚠ 重复的真实情况 | "0 个重复结构"**只在 SMILES 粒度成立**。按 InChI 连接层（忽略立体与质子化）则有 **82 组 / 180 行**重复。由于 Morgan 指纹未启用手性、描述符全为 2D，这 82 组在**特征空间里逐位相同**，有效唯一特征向量 = 4102 (4200 − 180 + 82)。骨架划分下无害（对映体共享 Murcko 骨架，必然同分区），**随机划分下是真实泄漏**。见比较报告 L5 |
 | 划分 | Bemis–Murcko 骨架划分 3360 / 420 / 420（确定性，无 RNG）+ 随机划分对照 |
 | 调参 | 仅在 train 上做 5 折 CV；模型族选择看 valid；**test 只碰一次** |
 | 指标 | RMSE、MAE、R²、Spearman ρ、Kendall τ，全部带 95% bootstrap 区间 |
@@ -38,7 +45,7 @@
 其 nearest-neighbour 相似性审计的思路已被吸收（见 `src/logd/similarity.py`），
 但没有改动它的任何文件。
 
-## 3. 环境：为什么是容器而不是 venv
+## 3. 环境：Smart App Control 与容器的真实关系
 
 这台机器的 Windows 11 **Smart App Control 处于 Enforced 状态**
 （`VerifiedAndReputablePolicyState = 1`），会拦截 RDKit 的未签名原生 DLL：
@@ -49,9 +56,18 @@ CodeIntegrity 事件 3033 / 3077:
   Policy ID {0283ac0f-fff1-49ae-ada1-8a933130cad6}
 ```
 
-因此 `.venv` 里的 rdkit **无法 import**。
+**这个拦截是间歇性的，不是恒定的。** 实测时间线（同一个 `.pyd` 文件）：
+
+1. 最初 `.venv` 里的 rdkit 无法 import → 当时改用容器。
+2. 数分钟后 SAC 的信誉查询自行放行 → 原生 `.venv` 可用，
+   Run 3 / Run 4 两次完整训练 + 49 项测试（1.49s 全绿）都在原生环境跑完。
+3. 之后几分钟内**又被拦下**（`cDataStructs.pyd`，事件 3033/3077/3118）。
+   等待并重试 15 次 / 每次 60 秒，未放行。
+
+所以结论不是"容器是必需的"，也不是"原生可用"，而是：
+**这台机器上的原生环境不可靠但可用，容器才是可复现的那条路。**
 关闭 Smart App Control 是**不可逆**的（重新开启需要重装 Windows），
-所以没有去碰这个安全设置，而是改用 Linux 容器运行。副作用是环境固定、更可复现。
+因此没有去碰这个安全设置。
 
 - 镜像：`logd-baseline:0.1`（`Dockerfile`，python:3.13-slim + `requirements.txt` 全部钉版本）
 - 容器内实测：rdkit 2026.09.2 · sklearn 1.9.1 · numpy 2.5.5 · pandas 3.1.1 · scipy 1.18.1
@@ -90,15 +106,20 @@ Dockerfile, requirements.txt, run.ps1, pytest.ini, LICENSE
 
 ## 5. 还没做
 
-1. `hgb_desc`、`hgb_desc_ecfp4` 未训练（Run 1 在此崩溃，Run 2 被主动停止）。
-2. 随机划分（random split）整组未训练。
-3. `results/validation_*.json` 未生成（train.py 在全部模型跑完后才写）。
+1. ~~`hgb_desc`、`hgb_desc_ecfp4` 未训练~~ **已完成**（Run 3/4，原生，未用 Docker，
+   无资源异常，故未触发"放弃 boosting 退回 SVR"的预案）。
+2. ~~随机划分整组未训练~~ **已完成**。
+3. ~~`results/validation_*.json` 未生成~~ **已生成**（两套划分各一份）。
 4. ~~nearest-neighbour 相似性审计未运行~~ **已完成**，见 `results/leakage_audit_logd.json`
    与比较报告第 9 节。结论：骨架划分 test 最近邻中位数 0.457、ECFP4 相同孪生 **0 例**；
    随机划分 0.694、**14 例**。主划分干净，随机划分确有泄漏（故仅作对照）。
 5. 测试集评估**未运行**，这是刻意的。
-6. `README.md` 未写——**必须等有完整实测结果之后再写**，禁止先写数字再跑。
-7. git 已 `init`（main 分支），但**尚未提交**。
+6. ~~`README.md` 未写~~ **已写**。所有数字都来自已完成的运行；
+   测试集一节明确写着"尚未评分"，没有预填任何测试数字。
+7. ~~git 尚未提交~~ 已有多次提交，main 分支。
+8. **唯一剩下的一步：** `python -m logd.evaluate --split scaffold
+   --confirm-final-evaluation`。等 SAC 放行 RDKit 即可执行。
+   只评估骨架划分；随机划分只作验证集对照，不花掉第二次测试额度。
 
 恢复步骤与资源门槛见 `results/experiment_log.md` 的"恢复计划"。
 

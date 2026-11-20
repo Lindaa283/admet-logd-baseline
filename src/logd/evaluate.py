@@ -8,6 +8,11 @@ This module is the only place the test set is read, and it is built to make
   changed from here.
 * It evaluates the test partition frozen by `train.py`, read back from
   `artifacts/<split>/partition_test.csv`, so the set cannot drift.
+* The headline model is read from `results/validation_<split>.json`, i.e. it
+  was fixed on validation before this ran. An earlier version of this module
+  reported whichever model scored best *on test*, which is post-hoc selection
+  dressed up as a result. The post-hoc winner is still printed, labelled as
+  not being the claim.
 * Every run appends a record to `results/test_access_log.jsonl` with the
   timestamp, git commit and data digest. If that log has more entries than
   there are reported result sets, someone was peeking, and the log says so.
@@ -85,6 +90,29 @@ def _plot(split_kind: str, model: str, y_true: np.ndarray, y_pred: np.ndarray) -
     plt.close(fig)
 
 
+def _preregistered_model(split_kind: str, available: list[str]) -> str:
+    """The model frozen on validation, read from train.py's output.
+
+    Fails loudly rather than falling back to a test-chosen model: if the
+    pre-registration is missing, the test evaluation has no defensible
+    headline and should not be reported as one.
+    """
+    path = cfg.RESULTS / f"validation_{split_kind}.json"
+    if not path.exists():
+        raise FileNotFoundError(
+            f"No pre-registered model selection at {path}. The headline model "
+            "must be fixed before the test set is read. "
+            f"Run: python -m logd.train --split {split_kind}"
+        )
+    selected = json.loads(path.read_text(encoding="utf-8")).get("selected_model")
+    if selected not in available:
+        raise ValueError(
+            f"pre-registered model {selected!r} has no frozen artifact; "
+            f"available: {available}"
+        )
+    return selected
+
+
 def evaluate_split(split_kind: str, model_names: list[str]) -> dict:
     art_dir = cfg.ARTIFACTS / split_kind
     part_path = art_dir / "partition_test.csv"
@@ -148,18 +176,27 @@ def evaluate_split(split_kind: str, model_names: list[str]) -> dict:
             f"kendall={ci['kendall']['point']:.3f}"
         )
 
-    best = min(points, key=lambda n: points[n]["metrics"]["rmse"])
+    # The headline model is the one FROZEN ON VALIDATION by train.py, read
+    # back from disk. It is deliberately NOT the model with the lowest test
+    # RMSE: choosing that after seeing the test set is post-hoc selection, and
+    # it would make the reported interval too narrow. The post-hoc winner is
+    # still reported below, clearly labelled as not being this project's claim.
+    headline = _preregistered_model(split_kind, available)
+    post_hoc_best = min(points, key=lambda n: points[n]["metrics"]["rmse"])
+
+    # Baselines are fixed by construction, not selected, so taking the best of
+    # them on test is a comparison, not a choice: all three are reported.
     best_baseline = min(
         (n for n in points if points[n]["is_baseline"]),
         key=lambda n: points[n]["metrics"]["rmse"],
         default=None,
     )
-    _plot(split_kind, best, y_test, predictions[f"pred_{best}"].to_numpy())
+    _plot(split_kind, headline, y_test, predictions[f"pred_{headline}"].to_numpy())
 
     # --- how far is the test set from the training set? ----------------------
     sims = similarity.nearest_train_similarity(smiles, train_smiles)
     predictions["nearest_train_tanimoto"] = sims
-    audited = [n for n in (best, best_baseline) if n is not None]
+    audited = [n for n in (headline, best_baseline) if n is not None]
     similarity_audit = {
         "description": (
             "ECFP4 Tanimoto from each test molecule to its nearest training "
@@ -182,14 +219,33 @@ def evaluate_split(split_kind: str, model_names: list[str]) -> dict:
     verdict = None
     if best_baseline is not None:
         delta = (
-            points[best_baseline]["metrics"]["rmse"] - points[best]["metrics"]["rmse"]
+            points[best_baseline]["metrics"]["rmse"]
+            - points[headline]["metrics"]["rmse"]
         )
-        beats = best not in {n for n in points if points[n]["is_baseline"]}
         verdict = {
-            "best_model": best,
+            "headline_model": headline,
+            "headline_chosen_how": (
+                "frozen before this evaluation by train.py, on validation RMSE "
+                "alone; read back from results/validation_"
+                f"{split_kind}.json"
+            ),
             "best_baseline": best_baseline,
             "rmse_improvement_over_best_baseline": round(delta, 4),
-            "learned_model_beats_all_baselines": bool(beats),
+            "headline_beats_all_baselines": bool(
+                not points[headline]["is_baseline"]
+                and points[headline]["metrics"]["rmse"]
+                < points[best_baseline]["metrics"]["rmse"]
+            ),
+            "post_hoc_best_on_test": post_hoc_best,
+            "post_hoc_note": (
+                "post_hoc_best_on_test is the lowest test RMSE in the table. "
+                "It is reported for completeness and is NOT this project's "
+                "result: it was chosen after seeing the test labels, so its "
+                "bootstrap interval understates its true uncertainty. If it "
+                "differs from headline_model, the honest reading is that the "
+                "two are within noise of each other on validation, not that "
+                "the better test score was earned."
+            ),
             "interpretation": (
                 "A learned model is only worth shipping if this improvement is "
                 "larger than the bootstrap intervals above."

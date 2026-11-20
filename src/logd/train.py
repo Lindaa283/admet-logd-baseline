@@ -8,10 +8,15 @@ Protocol, enforced by the code rather than promised in prose:
 * What this module does with the test partition, stated precisely because an
   earlier version of this docstring overclaimed: it READS the test rows and
   writes them to `partition_test.csv`, to freeze which molecules are held
-  out. It never featurises them, never passes them to `fit`, and never
-  computes a metric on them. So test labels do reach this process's memory
-  and the disk; they do not reach any model or any selection decision.
-  The honest guarantee is "not used", not "not loaded".
+  out. It also passes them through `splits.split_summary`, which records
+  five descriptive statistics of the test labels -- n, mean, sd, min, max --
+  into `results/validation_<split>.json`. It never featurises a test row,
+  never passes one to `fit`, and never computes a model metric on one. So
+  test labels reach this process's memory, the disk, and a published summary
+  table; they do not reach any model or any selection decision, because the
+  selection rule is `argmin` over validation RMSE and has no term that could
+  read them. The honest guarantee is "no test-derived quantity entered any
+  decision", not "not loaded" and not "untouched".
 * The validation set is scored once per model, after refitting on train. It is
   used to choose *which model family* to put forward, and for nothing else.
 * Fitted models are frozen to `artifacts/<split>/<model>.joblib`. The test
@@ -146,8 +151,17 @@ def train_split(split_kind: str, model_names: list[str], n_jobs: int) -> dict:
     payload = {
         "split": summary,
         "selection_rule": (
-            "lowest validation RMSE; validation used ONLY for this choice. "
-            "Hyperparameters came from 5-fold CV on train. Test set untouched."
+            "argmin of validation RMSE over the model families below; the "
+            "validation partition is used for this choice and nothing else. "
+            "Hyperparameters came from 5-fold CV on train only. "
+            "Test partition: NOT untouched, stated precisely -- the `split` "
+            "block above reports n, label_mean, label_std, label_min and "
+            "label_max for it, so those five descriptive statistics of the "
+            "test labels were computed before any test evaluation. No test "
+            "row was featurised, fitted on, or scored here, and this "
+            "selection rule cannot depend on those statistics. The defensible "
+            "claim is 'no test-derived quantity entered any decision', not "
+            "'test set untouched'."
         ),
         "selected_model": selected,
         "featurization_seconds": {b: cache[b]["seconds"] for b in cache},

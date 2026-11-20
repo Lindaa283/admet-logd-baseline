@@ -1,0 +1,191 @@
+{
+  "what_this_is": "State frozen before the project's single formal test-set evaluation. Model family, hyperparameters, preprocessing, data, splits and metric list are all fixed by the hashes and constants below. Anything that changes a reported test number also changes a hash here.",
+  "frozen_at_utc": "2026-11-20T16:05:41+00:00",
+  "scope": "src/logd ONLY. The parallel src/admet implementation in this repository has its own, separately produced test results and its own protocol; this manifest says nothing about them.",
+  "git": {
+    "commit": "26fd0a172c13fc020948b7a385207a7bc6e9e6eb",
+    "branch": "main",
+    "uncommitted_tracked_changes": true,
+    "note": "uncommitted_tracked_changes may be true: the freeze is defined by the file hashes in this manifest, not by the commit alone. The commit that immediately follows this evaluation contains this exact code."
+  },
+  "random_seed": 20261120,
+  "config_constants": {
+    "RANDOM_SEED": 20261120,
+    "N_CV_FOLDS": 5,
+    "TRAIN_FRAC": 0.8,
+    "VALID_FRAC": 0.1,
+    "TEST_FRAC": 0.1,
+    "DUPLICATE_LABEL_TOLERANCE": 0.5,
+    "MORGAN_RADIUS": 2,
+    "MORGAN_NBITS": 2048,
+    "EXCLUDED_DESCRIPTORS": [
+      "Ipc"
+    ],
+    "DATASET_SHA256": "aed41590cb30609d51d8e08ad3ff06495a76e80e211358801f596b10da69bacd"
+  },
+  "metrics_frozen": [
+    "rmse",
+    "mae",
+    "r2",
+    "spearman",
+    "kendall"
+  ],
+  "metric_uncertainty": "percentile bootstrap, 1000 resamples, seed = RANDOM_SEED",
+  "data_sha256": {
+    "data/processed/logd74_curated.csv": "349071a1edc40f3fd9d7977026f75783037a551fcf32ef2c1a3fea06eb13b515",
+    "data/raw/Lipophilicity.csv": "aed41590cb30609d51d8e08ad3ff06495a76e80e211358801f596b10da69bacd",
+    "data/raw/provenance.json": "3f0a55a85d1533a4064c289827580710f99b76f1b2a409ee76770bae7ea621c7"
+  },
+  "code_sha256": {
+    "src/logd/__init__.py": "3ce14974b2a0191e2b83f8d47f6320560fa06f82a2191fb26d38e0d6b668d5f0",
+    "src/logd/audit.py": "7e7d9f4fddfc37d48f2712eae3267f943a43dbeec43823239e206e49eada9a54",
+    "src/logd/config.py": "dad0e539492908978f483e9acb14b1a9ec03dbccd25536063877b441e9fa983f",
+    "src/logd/data.py": "caeca62a61448812834069e6227a6917dda152c33926eafbc0354cff4ec3f32d",
+    "src/logd/evaluate.py": "e157ef31ca1047333c006a4a2bc35875b9713bb4fa16220a42153742c5dda6ad",
+    "src/logd/featurize.py": "ba07b4188a2f35ac54c7cbac9a34a8f0a7cedafe9a1535ba0ae6c5faf6a02c09",
+    "src/logd/metrics.py": "743f5fb12f78b93c913997119d72b7d9373eca3b28e815028d0e9c087431ed18",
+    "src/logd/models.py": "09935b3c941777add2bcd3a06018d7c7fdb484336f693d4f1cf678a36ebf39ad",
+    "src/logd/provenance.py": "ecc19683946d848d9bac028e457c1fffae7da070c32cef3046adaf5ca452a348",
+    "src/logd/similarity.py": "b538c974ab68bb5ad86e15aad66e11af33129f3e05df13cfd94f300bc2605b7e",
+    "src/logd/splits.py": "363ca10808b1bcc0b092f03f15ebd235b822f7a7c4419115f928c3c1cf3fbf1a",
+    "src/logd/train.py": "6213e26126275c9ebcdffe285bb6fdc7498f68a82434010b6808339cff10a13d"
+  },
+  "splits": {
+    "scaffold": {
+      "preregistered_selected_model": "svr_desc",
+      "selected_on": "validation RMSE only (argmin); see selection_rule in the validation json",
+      "sizes": {
+        "train": 3360,
+        "valid": 420,
+        "test": 420
+      },
+      "validation_rmse_by_model": {
+        "mean_baseline": 1.2143,
+        "clogp_identity": 1.7407,
+        "clogp_linear": 1.0567,
+        "ridge_ecfp4": 0.9506,
+        "svr_desc": 0.7541,
+        "rf_desc": 0.819,
+        "hgb_desc": 0.7946,
+        "hgb_desc_ecfp4": 0.7885
+      },
+      "best_params_by_model": {
+        "mean_baseline": {},
+        "clogp_identity": {},
+        "clogp_linear": {},
+        "ridge_ecfp4": {
+          "model__alpha": "10.0"
+        },
+        "svr_desc": {
+          "model__C": "10.0",
+          "model__epsilon": "0.1",
+          "model__gamma": "scale"
+        },
+        "rf_desc": {
+          "model__max_features": "0.3",
+          "model__min_samples_leaf": "1"
+        },
+        "hgb_desc": {
+          "model__l2_regularization": "0.0",
+          "model__learning_rate": "0.05",
+          "model__max_leaf_nodes": "31"
+        },
+        "hgb_desc_ecfp4": {
+          "model__learning_rate": "0.05",
+          "model__max_leaf_nodes": "31"
+        }
+      },
+      "frozen_estimator_sha256": {
+        "artifacts/scaffold/clogp_identity.joblib": "49433d4eab7379526c97746479ca1ec07a9265ace31ea2ff5882960fea844997",
+        "artifacts/scaffold/clogp_linear.joblib": "67df0ed6cdd01c994a58352a9dac69789b8a62666aeac4cb8149e5eba471680a",
+        "artifacts/scaffold/hgb_desc.joblib": "6d61c668ac686eaddb4b82f7a4c282332cca73c13631df2cf3aa50d644ab91eb",
+        "artifacts/scaffold/hgb_desc_ecfp4.joblib": "680e97c1314505a98dfe5e94d5b886f74667e3708964a94530114a255fcd9356",
+        "artifacts/scaffold/mean_baseline.joblib": "18789cb70f0803b3425dd9e01aef7ee5c7211b176918bf5d990639026ec184a4",
+        "artifacts/scaffold/rf_desc.joblib": "71e244997aa447833ea8f2c110376abe023dc9c64f8c75329fcce813958d75d7",
+        "artifacts/scaffold/ridge_ecfp4.joblib": "0cee0a35676ce0f0031fe160c63f0085198ec19e8c29fb67323636cd74a8764d",
+        "artifacts/scaffold/svr_desc.joblib": "e428985cb73d3abb31098b80956d0633da3aa6c944087a06dd5860952819999e"
+      },
+      "frozen_partition_sha256": {
+        "artifacts/scaffold/partition_test.csv": "4cddd94a55c205129622bec0be7834d2678a84a5553063b69705c5656db1db80",
+        "artifacts/scaffold/partition_train.csv": "0196f42dd9a6463032e000c0e846a87985d62004f89691ac0aa4cf1b781be190",
+        "artifacts/scaffold/partition_valid.csv": "ad5c5012565b214bac8d415435c7bc5f6a6651f238c2c8eafe389c179332ec03"
+      }
+    },
+    "random": {
+      "preregistered_selected_model": "hgb_desc_ecfp4",
+      "selected_on": "validation RMSE only (argmin); see selection_rule in the validation json",
+      "sizes": {
+        "train": 3360,
+        "valid": 420,
+        "test": 420
+      },
+      "validation_rmse_by_model": {
+        "mean_baseline": 1.2305,
+        "clogp_identity": 1.7446,
+        "clogp_linear": 1.1132,
+        "ridge_ecfp4": 0.8195,
+        "svr_desc": 0.6527,
+        "rf_desc": 0.7125,
+        "hgb_desc": 0.6772,
+        "hgb_desc_ecfp4": 0.6448
+      },
+      "best_params_by_model": {
+        "mean_baseline": {},
+        "clogp_identity": {},
+        "clogp_linear": {},
+        "ridge_ecfp4": {
+          "model__alpha": "10.0"
+        },
+        "svr_desc": {
+          "model__C": "10.0",
+          "model__epsilon": "0.1",
+          "model__gamma": "scale"
+        },
+        "rf_desc": {
+          "model__max_features": "0.3",
+          "model__min_samples_leaf": "1"
+        },
+        "hgb_desc": {
+          "model__l2_regularization": "0.0",
+          "model__learning_rate": "0.05",
+          "model__max_leaf_nodes": "31"
+        },
+        "hgb_desc_ecfp4": {
+          "model__learning_rate": "0.05",
+          "model__max_leaf_nodes": "31"
+        }
+      },
+      "frozen_estimator_sha256": {
+        "artifacts/random/clogp_identity.joblib": "49433d4eab7379526c97746479ca1ec07a9265ace31ea2ff5882960fea844997",
+        "artifacts/random/clogp_linear.joblib": "bfc798d5214b15acc86b4b95eee5afb9c8eccc983091ad431b42d920ad6b1c3e",
+        "artifacts/random/hgb_desc.joblib": "9e5f1e00dadf947698d0170b0ede42debc56c31b79d75c0ca5b621c5823f425e",
+        "artifacts/random/hgb_desc_ecfp4.joblib": "d4866eed2282594173bce56cd298b7576ce5624b9f1b123cba97a5000666aa19",
+        "artifacts/random/mean_baseline.joblib": "3821143eca14523209ae0512788468df6ca743b7d20dd3bf9d4b0774c8a2a395",
+        "artifacts/random/rf_desc.joblib": "d3281dea3471c3094fe29a68a39f66db4b9bb25289a5c8e9a403a853b89fbc8c",
+        "artifacts/random/ridge_ecfp4.joblib": "0312827b499357d79f36b77ac8977f44c3e34d75ad75b36050e3cc904fcf681e",
+        "artifacts/random/svr_desc.joblib": "0a029a53079353ba830c67f33f61f22b0471d8c85c06a31ef2c3c9a0e52ab7c2"
+      },
+      "frozen_partition_sha256": {
+        "artifacts/random/partition_test.csv": "a5306dcb1d43be32916f2e82f008dee9cacb4fb9658e76c0ff730bc54001e2ab",
+        "artifacts/random/partition_train.csv": "c3cb838a8fb6a0a179b936a6ac07fd1a6ef649080cc4ec1f123e4f6e541549d8",
+        "artifacts/random/partition_valid.csv": "e6ba024247662ebc850df3f65fe421553dc432c2383b5e10851e7fbd6583fcdc"
+      }
+    }
+  },
+  "environment": {
+    "python": "3.13.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "rdkit": "2026.9.2",
+      "scikit-learn": "1.9.1",
+      "numpy": "2.5.5",
+      "pandas": "3.1.1",
+      "scipy": "1.18.1",
+      "joblib": "1.6.0",
+      "matplotlib": "3.11.2"
+    },
+    "thread_caps_used": "OMP/OPENBLAS/MKL/NUMEXPR_NUM_THREADS=4, GridSearchCV n_jobs=2",
+    "gpu_used": false,
+    "monetary_cost_usd": 0
+  }
+}

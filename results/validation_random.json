@@ -1,0 +1,211 @@
+{
+  "split": {
+    "kind": "random",
+    "sizes": {
+      "train": 3360,
+      "valid": 420,
+      "test": 420
+    },
+    "train": {
+      "n": 3360,
+      "n_scaffolds": 2009,
+      "label_mean": 2.2056,
+      "label_std": 1.2012,
+      "label_min": -1.5,
+      "label_max": 4.5
+    },
+    "valid": {
+      "n": 420,
+      "n_scaffolds": 354,
+      "label_mean": 2.073,
+      "label_std": 1.2248,
+      "label_min": -1.41,
+      "label_max": 4.49
+    },
+    "test": {
+      "n": 420,
+      "n_scaffolds": 364,
+      "label_mean": 2.1455,
+      "label_std": 1.1908,
+      "label_min": -1.28,
+      "label_max": 4.33
+    }
+  },
+  "selection_rule": "argmin of validation RMSE over the model families below; the validation partition is used for this choice and nothing else. Hyperparameters came from 5-fold CV on train only. Test partition: NOT untouched, stated precisely -- the `split` block above reports n, label_mean, label_std, label_min and label_max for it, so those five descriptive statistics of the test labels were computed before any test evaluation. No test row was featurised, fitted on, or scored here, and this selection rule cannot depend on those statistics. The defensible claim is 'no test-derived quantity entered any decision', not 'test set untouched'.",
+  "selected_model": "hgb_desc_ecfp4",
+  "featurization_seconds": {
+    "clogp": 9.47,
+    "desc": 153.31,
+    "desc_ecfp4": 182.85,
+    "ecfp4": 3.95
+  },
+  "models": {
+    "mean_baseline": {
+      "block": "clogp",
+      "note": "predicts the training-set mean; zero chemistry",
+      "is_baseline": true,
+      "n_hyperparameter_candidates": 1,
+      "best_params": {},
+      "cv_rmse_on_train": 1.2015,
+      "valid": {
+        "rmse": 1.2305,
+        "mae": 0.9946,
+        "r2": -0.0117,
+        "spearman": NaN,
+        "kendall": NaN
+      },
+      "fit_seconds": 3.3
+    },
+    "clogp_identity": {
+      "block": "clogp",
+      "note": "RDKit Crippen clogP used as-is; zero fitted parameters",
+      "is_baseline": true,
+      "n_hyperparameter_candidates": 1,
+      "best_params": {},
+      "cv_rmse_on_train": 1.7483,
+      "valid": {
+        "rmse": 1.7446,
+        "mae": 1.3188,
+        "r2": -1.034,
+        "spearman": 0.4149,
+        "kendall": 0.2875
+      },
+      "fit_seconds": 0.15
+    },
+    "clogp_linear": {
+      "block": "clogp",
+      "note": "Crippen clogP rescaled by a 2-parameter fit on train",
+      "is_baseline": true,
+      "n_hyperparameter_candidates": 1,
+      "best_params": {},
+      "cv_rmse_on_train": 1.0935,
+      "valid": {
+        "rmse": 1.1132,
+        "mae": 0.9053,
+        "r2": 0.1718,
+        "spearman": 0.4149,
+        "kendall": 0.2875
+      },
+      "fit_seconds": 0.06
+    },
+    "ridge_ecfp4": {
+      "block": "ecfp4",
+      "note": "linear model on 2048-bit ECFP4",
+      "is_baseline": false,
+      "n_hyperparameter_candidates": 4,
+      "best_params": {
+        "model__alpha": "10.0"
+      },
+      "cv_rmse_on_train": 0.8301,
+      "valid": {
+        "rmse": 0.8195,
+        "mae": 0.6381,
+        "r2": 0.5512,
+        "spearman": 0.7392,
+        "kendall": 0.5506
+      },
+      "fit_seconds": 11.1
+    },
+    "svr_desc": {
+      "block": "desc",
+      "note": "RBF SVR on standardised RDKit 2D descriptors",
+      "is_baseline": false,
+      "n_hyperparameter_candidates": 6,
+      "best_params": {
+        "model__C": "10.0",
+        "model__epsilon": "0.1",
+        "model__gamma": "scale"
+      },
+      "cv_rmse_on_train": 0.6526,
+      "valid": {
+        "rmse": 0.6527,
+        "mae": 0.476,
+        "r2": 0.7153,
+        "spearman": 0.8447,
+        "kendall": 0.6628
+      },
+      "fit_seconds": 66.35
+    },
+    "rf_desc": {
+      "block": "desc",
+      "note": "500-tree random forest on RDKit 2D descriptors",
+      "is_baseline": false,
+      "n_hyperparameter_candidates": 4,
+      "best_params": {
+        "model__max_features": "0.3",
+        "model__min_samples_leaf": "1"
+      },
+      "cv_rmse_on_train": 0.7188,
+      "valid": {
+        "rmse": 0.7125,
+        "mae": 0.5406,
+        "r2": 0.6608,
+        "spearman": 0.8164,
+        "kendall": 0.6268
+      },
+      "fit_seconds": 570.91
+    },
+    "hgb_desc": {
+      "block": "desc",
+      "note": "histogram gradient boosting; handles NaN descriptors natively",
+      "is_baseline": false,
+      "n_hyperparameter_candidates": 8,
+      "best_params": {
+        "model__l2_regularization": "0.0",
+        "model__learning_rate": "0.05",
+        "model__max_leaf_nodes": "31"
+      },
+      "cv_rmse_on_train": 0.6844,
+      "valid": {
+        "rmse": 0.6772,
+        "mae": 0.5125,
+        "r2": 0.6936,
+        "spearman": 0.826,
+        "kendall": 0.6366
+      },
+      "fit_seconds": 729.32
+    },
+    "hgb_desc_ecfp4": {
+      "block": "desc_ecfp4",
+      "note": "boosting on descriptors concatenated with ECFP4",
+      "is_baseline": false,
+      "n_hyperparameter_candidates": 4,
+      "best_params": {
+        "model__learning_rate": "0.05",
+        "model__max_leaf_nodes": "31"
+      },
+      "cv_rmse_on_train": 0.6623,
+      "valid": {
+        "rmse": 0.6448,
+        "mae": 0.4891,
+        "r2": 0.7222,
+        "spearman": 0.8474,
+        "kendall": 0.66
+      },
+      "fit_seconds": 1793.09
+    }
+  },
+  "provenance": {
+    "timestamp_utc": "2026-11-20T16:02:36+00:00",
+    "python": "3.13.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "cpu_count": 24,
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "pandas": "3.1.1",
+      "scikit-learn": "1.9.1",
+      "rdkit": "2026.9.2",
+      "joblib": "1.6.0",
+      "matplotlib": "3.11.2"
+    },
+    "gpu_detected": "NVIDIA GeForce RTX 5060 Laptop GPU, 8151 MiB, 591.91",
+    "gpu_used_for_training": false,
+    "git_commit": "26fd0a172c13fc020948b7a385207a7bc6e9e6eb",
+    "git_working_tree_dirty": true,
+    "monetary_cost_usd": 0.0,
+    "cost_note": "All computation local on the author's laptop. No cloud compute, no paid API, no licensed software. Public dataset downloaded once."
+  },
+  "_post_hoc_edit": "The `selection_rule` string in this file was corrected after the run, because the version train.py emitted ended with 'Test set untouched', which this same file contradicts by reporting test label statistics. Exactly one string field was rewritten. No numeric value, model, hyperparameter, split or metric in this file was altered. The corrected wording is what src/logd/train.py now emits."
+}
