@@ -1,0 +1,41 @@
+{
+  "columns": [
+    "CMPD_CHEMBLID",
+    "exp",
+    "smiles"
+  ],
+  "duplicate_label_spread_max": 1.5500000000000003,
+  "duplicate_label_spread_mean": 0.15292682926829268,
+  "duplicate_label_spread_median": 0.1,
+  "implied_experimental_mae_floor": 0.07646341463414634,
+  "label_max": 4.5,
+  "label_mean": 2.1863357142857143,
+  "label_median": 2.36,
+  "label_min": -1.5,
+  "label_name": "logD7.4",
+  "label_std": 1.203003713387104,
+  "label_units": "log10 ratio (dimensionless)",
+  "n_clean_rows": 4102,
+  "n_duplicate_compounds": 82,
+  "n_label_out_of_range": 0,
+  "n_missing_label": 0,
+  "n_missing_smiles": 0,
+  "n_multi_fragment": 1,
+  "n_raw_rows": 4200,
+  "n_rows_in_duplicate_groups": 180,
+  "n_unique_canonical_smiles": 4200,
+  "n_unique_connectivity": 4102,
+  "n_unique_inchikey": 4200,
+  "n_unparseable": 0,
+  "notes": [
+    "repeat measurements of one compound collapsed to their median; the spread is kept in the `label_spread` column"
+  ],
+  "plausible_range": [
+    -3.0,
+    7.0
+  ],
+  "source_file": "Lipophilicity.csv",
+  "source_sha256": "aed41590cb30609d51d8e08ad3ff06495a76e80e211358801f596b10da69bacd",
+  "unit_check": "consistent with a log10 distribution coefficient: 100.0% of values within (-3.0, 7.0), range 6.00",
+  "unparseable_examples": []
+}
