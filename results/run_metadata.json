@@ -1,6 +1,6 @@
 {
   "best_model_headline": "morgan_desc_hgb",
-  "bootstrap_resamples": 50,
+  "bootstrap_resamples": 1000,
   "chosen_hyperparameters": {
     "clogp_calibrated": {},
     "constant": {},
@@ -21,10 +21,10 @@
     }
   },
   "data_provenance": {
-    "attribution": "Experimental logD7.4, AstraZeneca, deposited in ChEMBL (doc CHEMBL3301363); distributed as MoleculeNet 'Lipophilicity'.",
-    "downloaded_utc": "2026-11-20T13:20:11+00:00",
+    "attribution": "Experimental logD7.4 curated from ChEMBL (AstraZeneca deposited data set), distributed as the MoleculeNet 'Lipophilicity' benchmark. ChEMBL data is released under CC BY-SA 3.0 Unported (https://www.ebi.ac.uk/chembl/). See DATA_SOURCES.md for the exact licence wording and for which identifiers were verified.",
+    "downloaded_utc": "2026-11-21T15:46:09+00:00",
     "filename": "Lipophilicity.csv",
-    "licence": "CC BY-SA 3.0 (ChEMBL); redistributed via MoleculeNet/DeepChem",
+    "licence": "CC BY-SA 3.0 Unported (ChEMBL); redistributed via MoleculeNet/DeepChem",
     "n_bytes": 282606,
     "name": "lipophilicity_az_logd74",
     "sha256": "aed41590cb30609d51d8e08ad3ff06495a76e80e211358801f596b10da69bacd",
@@ -40,7 +40,7 @@
     "results\\figures\\06_applicability_domain.png",
     "results\\figures\\07_descriptor_coefficients.png"
   ],
-  "finished_utc": "2026-11-20T13:32:30Z",
+  "finished_utc": "2026-11-21T15:55:48Z",
   "fractions": [
     0.7,
     0.1,
@@ -51,7 +51,7 @@
     "bits": 2048,
     "radius": 2
   },
-  "n_seeds": 1,
+  "n_seeds": 3,
   "platform": "Windows-11-10.0.26200-SP0",
   "python": "3.13.14",
   "random_state": 20261120,
@@ -63,5 +63,5 @@
     "scikit-learn": "1.9.1",
     "scipy": "1.18.1"
   },
-  "wall_seconds": 739.2
+  "wall_seconds": 579.0
 }

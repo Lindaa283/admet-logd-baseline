@@ -7,11 +7,22 @@
 
 ---
 
-## 1. 已停止的内容（确认）
+> **2026-11-21 更新：全量运行已补跑完成，第 7 节的产物不一致已修复。**
+> 在用户授权后重跑了 `n_seeds=3` / `bootstrap_resamples=1000`，并且是在**隔离的临时
+> 目录**里跑的（`pipeline.run(root=...)`），确认无误后才把 15 个文件拷进仓库，
+> 所以仓库里原有的已提交产物在核对之前一刻都没有被覆盖。
+> 核对结论：确定性骨架划分的全部点估计**逐位相同**（最大变动 0.000e+00），
+> QC 账本逐项相同，`clean_dataset.csv`、`qc_report.json`、`leakage_audit.json`
+> 与 7 张图中的 6 张**字节级完全一致**。唯一的数值差异是
+> `pred_morgan_rf` 的 **8.882e-16**——随机森林求平均时线程求和顺序造成的末位浮点噪声。
+> 现在 metrics、predictions、figures、run_metadata 与 leakage_audit **同为 7 个划分**。
+
+## 1. 运行状态
 
 | 项目 | 状态 |
 |---|---|
-| 全量 pipeline 运行（`n_seeds=3`, bootstrap 1000） | 启动于 13:40:50，**已 kill**，未完成 |
+| 全量 pipeline 运行（`n_seeds=3`, bootstrap 1000） | **已完成**（2026-11-21，579 s，exit 0，7 个划分） |
+| ~~此前那次全量运行~~ | 启动于 11-20 13:40:50，曾被 kill；已被上面的完整运行取代 |
 | 残留 python 进程 (PID 8744, 44900) | 已 kill；当前 `Get-Process python` 为空 |
 | 新的训练 / Docker / 占内存进程 | 未启动，也不会启动 |
 | git commit | **未执行**。我的改动留在工作区未提交 |
@@ -47,10 +58,12 @@ Windows 11 Smart App Control 处于 **Enforced**
 
 ---
 
-## 3. smoke test 实测结果（已完成，exit 0，耗时 739 s）
+## 3. 实测结果（全量运行，exit 0，耗时 579 s）
 
-设置：`n_seeds=1`、`bootstrap_resamples=50`、确定性骨架划分、原生 venv。
-**bootstrap 只有 50 次重采样**，所以下面的区间精度不足以发表，但点估计是实测值。
+设置：`n_seeds=3`、`bootstrap_resamples=1000`、原生 venv（非容器）。
+7 个划分：1 个确定性骨架 + 3 个带种子骨架 + 3 个随机。
+下面的 headline 表取自**确定性骨架划分**，它把大系列放进 train、单例骨架放进 test，
+是三种划分里最难的一种，所以用它当报告值。
 
 ### 数据策管（`results/tables/qc_report.json`）
 
@@ -61,14 +74,33 @@ logD ∈ [−1.5, 4.5]，mean 2.186，median 2.36，sd 1.203；
 
 ### 测试集指标（确定性骨架划分，test n≈820）
 
-| 模型 | test MAE | 95% CI (50×bootstrap) | RMSE | R² | Spearman ρ |
+| 模型 | test MAE | 95% CI (1000×bootstrap) | RMSE | R² | Spearman ρ |
 |---|---|---|---|---|---|
-| **morgan_desc_hgb** | **0.586** | [0.560, 0.630] | **0.763** | **0.613** | **0.758** |
-| descriptor_ridge | 0.725 | [0.694, 0.774] | 0.896 | 0.466 | 0.670 |
-| morgan_rf | 0.739 | [0.710, 0.785] | 0.933 | 0.422 | 0.663 |
-| morgan_ridge | 0.878 | [0.845, 0.923] | 1.147 | 0.125 | 0.577 |
-| clogp_calibrated | 0.891 | [0.852, 0.942] | 1.079 | 0.226 | 0.451 |
-| constant（训练均值） | 1.001 | [0.964, 1.050] | 1.227 | −0.000 | n/a |
+| **morgan_desc_hgb** | **0.586** | [0.553, 0.621] | **0.763** | **0.613** | **0.758** |
+| descriptor_ridge | 0.725 | [0.689, 0.760] | 0.896 | 0.466 | 0.670 |
+| morgan_rf | 0.739 | [0.698, 0.780] | 0.933 | 0.422 | 0.663 |
+| morgan_ridge | 0.878 | [0.829, 0.930] | 1.147 | 0.125 | 0.577 |
+| clogp_calibrated | 0.891 | [0.848, 0.938] | 1.079 | 0.226 | 0.451 |
+| constant（训练均值） | 1.001 | [0.954, 1.051] | 1.227 | −0.000 | n/a |
+
+### 划分难度的三级阶梯（全量运行新增，`metrics_split_family_summary.csv`）
+
+同一批数据、同一套代码、同一组已选定的超参，只改划分方式
+（种子组取 3 个种子的 mean ± sd）：
+
+| 划分 | `morgan_desc_hgb` MAE | RMSE | R² |
+|---|---|---|---|
+| 随机划分（乐观） | 0.443 ± 0.004 | 0.592 ± 0.004 | 0.750 |
+| 带种子骨架划分 | 0.502 ± 0.002 | 0.663 ± 0.018 | 0.680 |
+| **确定性骨架划分（报告值，最难）** | **0.586** | **0.763** | **0.613** |
+
+这组数字把一件事量化了：**随机划分的"优势"有 0.059 log 单位纯属划分泄漏**
+（0.443 → 0.502，两者都用同一个模型）。而真正更大的落差来自
+**带种子骨架 → 确定性骨架**（0.502 → 0.586，+0.084）——
+带种子骨架之间的 sd 只有 0.002，所以这 0.084 **不是种子噪声**，
+而是"把单例骨架全部赶进测试集"这个安排系统性地更难。
+零参数的 `clogp_calibrated` 在三种划分下几乎不动（0.868 / 0.847 / 0.891），
+因为它不从训练集学任何东西——这正是对照组该有的表现。
 
 **怎么读这张表：**
 - 最好的模型比**零参数 Crippen clogP 的线性校准版**好 0.305 log 单位 MAE（相对降低 34%），
@@ -142,10 +174,9 @@ results/figures/ 01–07 png（均来自已完成的 smoke run）
 ```
 
 ### 未完成
-1. **全量运行未完成**：`n_seeds=3` + bootstrap 1000 的正式运行被按指令中止。
-   现有数字全部来自 `n_seeds=1` / bootstrap 50 的 smoke run。
-2. **种子稳健性与随机划分汇总不完整**：`metrics_split_family_summary.csv`
-   目前只含 1 个 scaffold 种子和 1 个 random 种子，不足以给出 ±sd。
+1. ~~全量运行未完成~~ **已完成**（2026-11-21，`n_seeds=3` / bootstrap 1000，7 个划分）。
+2. ~~种子稳健性与随机划分汇总不完整~~ **已完成**：
+   `metrics_split_family_summary.csv` 现含每族 3 个种子，带 ±sd（见第 3 节阶梯表）。
 3. **README.md / RESULTS.md / LIMITATIONS.md / DATA_SOURCES.md 未撰写。**
    （licence 调研已完成，见下节，但未落盘成文档。）
 4. **申请用项目简介（RA/硕士）未撰写。**
@@ -247,23 +278,38 @@ core_a(40)+core_b(25)=65 一旦都先到就占满 train。
 
 ---
 
-## 7. 磁盘上的一处不一致（请勿误读）
+## 7. 产物批次一致性（曾经不一致，2026-11-21 已修复）
 
-被中止的全量运行**已经覆盖了几个文件**，它们现在与其余文件不同步：
+**曾经的问题。** 11-20 那次被中止的全量运行只覆盖了一部分文件，于是磁盘上同时存在
+两个批次：`leakage_audit.json` 描述 7 个划分，而 `metrics_*.csv`、`predictions_*.csv`、
+`figures/`、`run_metadata.json`（记录 `n_seeds: 1`）只覆盖 3 个划分。
+引用它们时很容易把两批数字当成同一次实验。
 
-| 文件 | 时间 | 来自哪次运行 |
-|---|---|---|
-| `results/tables/qc_report.json` | 13:33:45 | 被中止的全量运行（内容应与 smoke 相同，数据步是确定性的） |
-| `results/tables/clean_dataset.csv` | 13:34:08 | 被中止的全量运行（同上） |
-| `results/tables/leakage_audit.json` | 13:34:18 | **被中止的全量运行：含 7 个划分**（比 smoke 的 3 个更全） |
-| `results/tables/metrics_*.csv`、`predictions_*.csv` | 13:32:27–28 | **已完成的 smoke run：只含 3 个划分** |
-| `results/figures/01–07*.png` | 13:32:29–30 | **已完成的 smoke run** |
-| `results/run_metadata.json` | 13:32:31 | **已完成的 smoke run**（记录 `n_seeds: 1`） |
-| `results/tables/pytest_admet.txt` | 13:35:56 | 被中断的测试运行，**不完整** |
+**怎么修的。** 重跑一次完整 pipeline，但**先跑在隔离的临时目录**里
+（`pipeline.run(root=<临时目录>)`，原始 CSV 按同一 sha256 拷入），
+仓库里的已提交产物在核对完成前完全没有被触碰；核对通过后才拷进来 15 个文件。
 
-即：`leakage_audit.json` 描述 7 个划分，而 metrics / figures 只覆盖 3 个。
-**第 3 节表格里的数字全部取自自洽的 smoke run**（13:32:27–31 那批）。
-要得到完全自洽的一套产物，需要重跑一次完整 pipeline——**我没有跑，按指令停止**。
+**核对结果（这一步比重跑本身重要）：**
+
+| 检查 | 结果 |
+|---|---|
+| 确定性划分 6 个模型 × 4 个指标的点估计 | **全部逐位相同**，最大变动 `0.000e+00` |
+| QC 账本 8 个关键字段 | 逐项相同（输入字节相同 → 策管确定性复现） |
+| `clean_dataset.csv`、`qc_report.json`、`leakage_audit.json` | **字节级完全一致** |
+| 7 张图中的 6 张 | **字节级完全一致**（仅 `03_model_comparison.png` 变，因为随机划分均值现在来自 3 个种子） |
+| `predictions_headline_scaffold.csv` | 唯一数值差异 `pred_morgan_rf` **8.882e-16** —— 随机森林求平均的线程求和顺序造成的末位浮点噪声 |
+
+**现在的状态：** `metrics_all_splits.csv`、`metrics_headline_scaffold.csv`、
+`metrics_split_family_summary.csv`、`predictions_headline_scaffold.csv`、
+`figures/01–07`、`run_metadata.json`、`leakage_audit.json`
+**同为一次运行、同为 7 个划分**，`run_metadata.json` 记录 `n_seeds: 3`、
+`bootstrap_resamples: 1000`。7 个划分的泄漏审计全部 passed。
+
+**仍需注意的两个文件**（有意保留，已在文件开头标注"SUPERSEDED/ARCHIVED"）：
+`results/pytest_admet.txt`（11-20 那次被中断的测试运行，不完整）与
+`results/pipeline-full-run.txt`（被中止运行的 stderr，无任何指标）。
+当前有效的测试记录是 `results/tables/pytest_admet_2026-11-20_final.txt`（93 passed）
+与 `results/tables/pytest_logd_2026-11-20.txt`（49 passed）。
 
 ---
 
@@ -286,9 +332,8 @@ core_a(40)+core_b(25)=65 一旦都先到就占满 train。
 
 ## 9. 如果保留 src/admet，建议下一步
 
-1. 重跑一次完整 pipeline 得到自洽产物与可发表精度的区间：
+1. ~~重跑一次完整 pipeline~~ **已完成**（579 s，4 线程，纯 CPU，$0）。复现命令：
    `python -c "from admet import pipeline; pipeline.run(n_seeds=3, bootstrap_resamples=1000)"`
-   （约 30 min，4 线程，纯 CPU，$0；注意届时内存状况）
 2. 把第 4 节的重复化合物分歧与 `src/logd` 的策略并排对照后再定一种。
 3. 用同一划分、同一指标对照 `src/logd` 的 8 个模型，再决定保留哪一套。
 4. 文档（README / RESULTS / LIMITATIONS / DATA_SOURCES）与申请用简介仍需撰写；
