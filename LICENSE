@@ -19,23 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-The dataset used by this project (MoleculeNet "Lipophilicity", an AstraZeneca
-logD7.4 deposition distributed via ChEMBL) is not covered by this licence and
-is not redistributed here; it is downloaded from its public source at build
-time and pinned by sha256.
-
-ChEMBL data is released under the Creative Commons Attribution-ShareAlike 3.0
-Unported licence. EMBL-EBI's terms of use (Data, section 3) state that EMBL-EBI
-places no additional restrictions on use or redistribution beyond those of the
-original data owners, and require attribution. DeepChem, which hosts the file,
-licenses its own code under MIT.
-
-Two things are deliberately not asserted, because they could not be verified
-against a primary source: the exact ChEMBL deposition identifier, and the
-licence of the data file itself as distinct from the licence of the code that
-distributes it. The MoleculeNet datasets page returns 404 and neither host
-declares a licence for the file. Anyone redistributing this data should
-establish both for themselves rather than rely on this note.

@@ -517,6 +517,17 @@ intervals, pre-registered model selection, and a test-access log.
 
 ## Licence
 
-Code: see [`LICENSE`](LICENSE). It also records the data's upstream terms
-(ChEMBL CC BY-SA 3.0, EMBL-EBI conditions, DeepChem MIT) and states explicitly
-which two facts about the data file could not be verified.
+**Code:** MIT — see [`LICENSE`](LICENSE).
+
+**Data:** separate upstream terms, recorded in
+[`DATA_TERMS.md`](DATA_TERMS.md): ChEMBL CC BY-SA 3.0 Unported, the EMBL-EBI
+conditions and attribution requirement, and DeepChem's MIT licence for its own
+code. That file also states explicitly which two facts about the data file
+could **not** be verified against a primary source, and therefore are not
+asserted: the exact ChEMBL deposition identifier, and a licence for the data
+file as distinct from the code that distributes it.
+
+The dataset is **not redistributed here** — `data/raw/` is git-ignored and
+`src/admet/download.py` fetches it and pins the bytes by SHA-256. Note that
+CC BY-**SA** is share-alike, which is a further reason not to vendor the data
+into an MIT-licensed repository.
